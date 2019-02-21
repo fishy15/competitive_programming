@@ -45,8 +45,14 @@ There also might be some other files in here. Overall though, most of the files 
 | Silver | [Breed Counting] | 15/15 | Prefix Sums |
 | Gold | [Fruit Feast] | 12/12 | DP |
 
-
-
+### Jan 2016
+| Division | Problem | Test Cases | Notes |
+|------------|------------|-------------|---------------|
+| Bronze | [Promotion Counting] | 10/10 | Math |
+| Bronze | [Angry Cows] | NOT DONE | | 
+| Silver | [Angry Cows][2] | 10/10 | Linear Search | 
+| Silver | [Subsequences Summing to Sevens] | 10/10 | Prefix Sums | 
+| Silver | [Build Gates] | NOT DONE | |
 
 Problems I am currently working on:
 * cowjog
@@ -70,5 +76,10 @@ Problems I am currently working on:
 [Stampede]: /contest/jan15/silver/stampede/stampede.cpp
 [Breed Counting]: /contest/dec15/silver/bcount/bcount.cpp
 [Fruit Feast]: /contest/dec15/gold/feast/feast.cpp
+[Promotion Counting]: /contest/jan16/bronze/promote/promote.c
+[Angry Cows]: /contest/jan16/bronze/angry/angry.c
+[2]: /contest/jan16/silver/angry/angry.cpp
+[Subsequences Summing to Sevens]: /contest/jan16/silver/div7/div7.cpp
+[Build Gates]: /contest/jan16/silver/gates/gates.cpp
 
 
