@@ -34,6 +34,11 @@ There also might be some other files in here. Overall though, most of the files 
 | Silver | [Marathon][1] | NOT DONE | |
 | Silver | [Cow Jog] | 2/15 | |
 
+### Jan 2015
+| Division | Problem | Test Cases | Notes |
+|------------|------------|-------------|---------------|
+| Silver | [Stampede] | 1/15 | |
+
 
 Problems I am currently working on:
 * cowjog
@@ -54,5 +59,6 @@ Problems I am currently working on:
 [Piggyback]: /contest/dec14/silver/piggyback/piggyback.cpp
 [1]: /contest/dec14/silver/marathon/marathon.cpp
 [Cow Jog]: /contest/dec14/silver/cowjog/cowjog.cpp
+[Stampede]: /contest/jan15/silver/stampede/stampede.cpp
 
 
