@@ -23,13 +23,16 @@ There also might be some other files in here. Overall though, most of the files 
 | Division | Problem | Test Cases | Notes |
 |------------|------------|-------------|---------------|
 | Bronze | [Record Keeping] | 10/10 | |
-| Bronze | [Cow Baseball] | NOT DONE | NOT DONE | 
-| Silver | [Milk Scheduling] | 3/11 | NOT DONE | 
+| Bronze | [Cow Baseball] | NOT DONE |  | 
+| Silver | [Milk Scheduling] | 3/11 | | 
 
 ### Dec 2014
-| Problem | Test Cases | Notes |
-|---------|----------|------------|
-| [Milk Scheduling] | 3/11 | NOT COMPLETE | 
+| Division | Problem | Test Cases | Notes |
+|------------|------------|-------------|---------------|
+| Bronze | [Marathon] | 15/15 | Greedy |
+| Silver | [Piggyback] | NOT DONE | | 
+| Silver | [Marathon][1] | NOT DONE | |
+| Silver | [Cow Jog] | 2/15 | |
 
 
 Problems I am currently working on:
@@ -47,5 +50,9 @@ Problems I am currently working on:
 [Record Keeping]: /contest/dec13/bronze/records/records.cpp 
 [Cow Baseball]: /contest/dec13/bronze/baseball/baseball.cpp
 [Milk Scheduling]: /contest/dec13/silver/msched/msched.cpp
+[Marathon]: /contest/dec14/bronze/marathon/marathon.c
+[Piggyback]: /contest/dec14/silver/piggyback/piggyback.cpp
+[1]: /contest/dec14/silver/marathon/marathon.cpp
+[Cow Jog]: /contest/dec14/silver/cowjog/cowjog.cpp
 
 
