@@ -39,6 +39,14 @@ There also might be some other files in here. Overall though, most of the files 
 |------------|------------|-------------|---------------|
 | Silver | [Stampede] | 1/15 | |
 
+### Dec 2015
+| Division | Problem | Test Cases | Notes |
+|------------|------------|-------------|---------------|
+| Silver | [Breed Counting] | 15/15 | Prefix Sums |
+| Gold | [Fruit Feast] | 12/12 | DP |
+
+
+
 
 Problems I am currently working on:
 * cowjog
@@ -60,5 +68,7 @@ Problems I am currently working on:
 [1]: /contest/dec14/silver/marathon/marathon.cpp
 [Cow Jog]: /contest/dec14/silver/cowjog/cowjog.cpp
 [Stampede]: /contest/jan15/silver/stampede/stampede.cpp
+[Breed Counting]: /contest/dec15/silver/bcount/bcount.cpp
+[Fruit Feast]: /contest/dec15/gold/feast/feast.cpp
 
 
