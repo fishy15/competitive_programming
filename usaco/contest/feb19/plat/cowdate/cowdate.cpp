@@ -55,21 +55,37 @@ int main() {
     }
 
     for (; l < n; l++) {
-        for (int r = l; r < n; r++) {
+        double prev = 0;
+        while (r < n) {
+            cout << "mult " << r << '\n';
             prod *= p_inv[r];
             sum += p_frac[r];
 
             double p = prod * sum;
+            cout << l << ' ' << r << ' ' << prod << '\n';
+            if (p > ::max) {
+                ::max = p;
+                cout << l << ' ' << r << endl;
+            }
+
             if (p < prev) {
                 break;
             }
 
             prev = p;
-            if (p > max) {
-                max = p;
-            }
+            r++;
         }
+
+        double p = prod * sum;
+        if (p > ::max) {
+            ::max = p;
+            cout << l << ' ' << r << endl;
+        }
+
+        cout << "div " << l << '\n';
+        prod /= p_inv[l];
+        sum -= p_frac[l];
     }
 
-    fout << (int)(1000000 * max) << '\n';
+    fout << (int)(1000000 * ::max) << '\n';
 }
