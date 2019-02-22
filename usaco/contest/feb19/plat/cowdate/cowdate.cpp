@@ -54,37 +54,55 @@ int main() {
         p_frac[i] = p / (1 - p);
     }
 
-    for (; l < n; l++) {
-        double prev = 0;
-        while (r < n) {
-            cout << "mult " << r << '\n';
-            prod *= p_inv[r];
-            sum += p_frac[r];
+    if (n > 4000) {
+        for (; l < n; l++) {
+            double prev = 0;
+            while (r < n) {
+                //cout << "mult " << r << '\n';
+                prod *= p_inv[r];
+                sum += p_frac[r];
+
+                double p = prod * sum;
+                //cout << l << ' ' << r << ' ' << prod << '\n';
+                if (p > ::max) {
+                    ::max = p;
+                    //cout << l << ' ' << r << endl;
+                }
+
+                if (p < prev) {
+                    r++;
+                    break;
+                }
+
+                prev = p;
+                r++;
+            }
 
             double p = prod * sum;
-            cout << l << ' ' << r << ' ' << prod << '\n';
             if (p > ::max) {
                 ::max = p;
-                cout << l << ' ' << r << endl;
+                //cout << l << ' ' << r << endl;
             }
 
-            if (p < prev) {
-                break;
+            //cout << "div " << l << '\n';
+            prod /= p_inv[l];
+            sum -= p_frac[l];
+        }
+    } else {
+        for (; l < n; l++) {
+            double prod = 1;
+            double sum = 0;
+
+            for (int r = l; r < n; r++) {
+                prod *= p_inv[r];
+                sum += p_frac[r];
+
+                double p = prod * sum;
+                if (p > ::max) {
+                    ::max = p;
+                }
             }
-
-            prev = p;
-            r++;
         }
-
-        double p = prod * sum;
-        if (p > ::max) {
-            ::max = p;
-            cout << l << ' ' << r << endl;
-        }
-
-        cout << "div " << l << '\n';
-        prod /= p_inv[l];
-        sum -= p_frac[l];
     }
 
     fout << (int)(1000000 * ::max) << '\n';
