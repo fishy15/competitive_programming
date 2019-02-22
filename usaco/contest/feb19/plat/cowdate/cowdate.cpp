@@ -36,6 +36,12 @@ int n;
 double p_inv[1000000];
 double p_frac[1000000];
 
+int l = 0;
+int r = 0;
+double max = 0.0;
+double prod = 1.0;
+double sum = 0.0;
+
 int main() {
     ifstream fin("cowdate.in");
     ofstream fout("cowdate.out");
@@ -48,18 +54,17 @@ int main() {
         p_frac[i] = p / (1 - p);
     }
 
-    int l = 0;
-    double max = 0.0;
-
     for (; l < n; l++) {
-        double prod = 1;
-        double sum = 0;
-
         for (int r = l; r < n; r++) {
             prod *= p_inv[r];
             sum += p_frac[r];
 
             double p = prod * sum;
+            if (p < prev) {
+                break;
+            }
+
+            prev = p;
             if (p > max) {
                 max = p;
             }
