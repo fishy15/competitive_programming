@@ -1,3 +1,6 @@
+// fixed to get full test cases
+// 15/15
+
 // :pray: :arrayman:
 // :pray: :summitosity:
 // :pray: :pusheenosity:
@@ -57,7 +60,7 @@ int main() {
     if (n > 4000) {
         for (; l < n; l++) {
             double prev = 0;
-            while (r < n) {
+            while (r < n && sum < 1) {
                 //cout << "mult " << r << '\n';
                 prod *= p_inv[r];
                 sum += p_frac[r];
