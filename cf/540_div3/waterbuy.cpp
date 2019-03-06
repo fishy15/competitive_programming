@@ -25,3 +25,28 @@
 // :pray: :snek:
 // :pray: :wayne:
 // :pray: :wu:
+
+#include <iostream>
+#include <algorithm>
+
+#define ll long long
+
+using namespace std;
+
+int main() {
+    ll m; cin >> m;
+    for (ll i = 0; i < m; i++) {
+        ll n, a, b; cin >> n >> a >> b;
+        if (2 * a < b) {
+            cout << n * a << '\n';
+        } else {
+            if (n % 2 == 0) {
+                cout << n / 2 * b << '\n';
+            } else {
+                cout << n / 2 * b + a << '\n';
+            }
+        }
+    }
+    
+    return 0;
+}
