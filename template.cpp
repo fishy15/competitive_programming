@@ -36,6 +36,10 @@
 #include <queue>
 #include <cmath>
 
+#define ll long long
+#define eps 1e-8
+#define MOD 10000007
+
 using namespace std;
 
 int main() {
