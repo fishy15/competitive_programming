@@ -28,44 +28,43 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
 #include <utility>
 #include <cmath>
+
+#define ll long long
 
 using namespace std;
 
 int n; 
 vector<pair<int, int>> s = {{0, 0}};
+set<pair<int, int>> s2 = {{0, 0}};
 
 int main() {
     cin >> n;
-
     for (int i = 0; i < n; i++) {
         int x, y; cin >> x >> y;
-        if (make_pair(x, y) != s[i - 1]) {
+        if (!s2.count({x, y})) {
             s.push_back({x, y});
+            s2.insert({x, y});
         }
     }
 
-    int ans = 0;
-
-    for (int i = 0; i < s.size() - 1; i++) {
-        //int diff1 = s[i + 1].first - s[i].first;
-        //int diff2 = s[i + 1].second - s[i].second;
-        //cout << min(s[i + 1].first, s[i + 1].second) << endl;
-        int diff = min(s[i + 1].first, s[i + 1].second) - max(s[i].first, s[i].second) + 1;
-        ans += diff;
-    }
-
-    int last = (int)(s.size()) - 1;
-    if (last == 0) {
-        if (s[0].first == s[0].second) {
-            ans++;
-        }
-    } else {
-        if (s[last].first == s[last].second && s[last - 1].first != s[last].first) {
-            ans++;
+    ll ans = 0;
+    for (int i = 1; i < s.size(); i++) {
+        int l = max(s[i - 1].first, s[i - 1].second);
+        int r = min(s[i].first, s[i].second);
+        int diff = r - l + 1;
+        if (diff > 0) {
+            //cout << "DD" << i << ' ' << diff << '\n';
+            ans += diff;
         }
     }
 
-    cout << ans << '\n';
+    for (int i = 1; i < s.size() - 1; i++) {
+        if (s[i].first == s[i].second) ans--;
+    }
+
+    cout << (ans ? ans : 1) << '\n';
+    return 0;
 }
