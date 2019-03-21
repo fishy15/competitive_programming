@@ -34,7 +34,6 @@
 #include <utility>
 #include <map>
 #include <queue>
-#include <set>
 #include <cmath>
 
 #define ll long long
@@ -45,6 +44,12 @@ using namespace std;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    int n; cin >> n;
+    for (int i = 0; i < n; i++) {
+        int a, b; cin >> a >> b;
+        cout << a + b << '\n';
+    }
 
     return 0;
 }
