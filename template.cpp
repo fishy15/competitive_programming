@@ -1,20 +1,20 @@
 // :pray: :arrayman:
-// :pray: :summitosity:
-// :pray: :pusheenosity:
+// :pray: :summit:
+// :pray: :pusheen:
 // :pray: :prodakcin:
 // :pray: :spacewalker:
-// :pray: :duk-duk-go:
+// :pray: :duk:
 // :pray: :gustav:
 // :pray: :tmw:
-// :pray: :eediosity:
+// :pray: :eed:
 // :pray: :chicubed:
 // :pray: :arceus:
 // :pray: :gamegame:
-// :pray: :sinxiosity
-// :pray: :eggyosity:
+// :pray: :sinx:
+// :pray: :eyg"
 // :pray: :squares-are-fine:
-// :pray: :see-jay:
-// :pray: :stephiosity:
+// :pray: :cj:
+// :pray: :steph:
 // :pray: :fatant:
 // :pray: :mathbot:
 // :pray: :dolphin:
@@ -27,6 +27,10 @@
 // :pray: :wu:
 // :pray: :vmaddur:
 // :pray: :dorijanko:
+// :pray: :gaming:
+// :pray: :kassuno:
+// :pray: :hyacinth:
+// :pray: :chilli:
 
 #include <iostream>
 #include <fstream>
