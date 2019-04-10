@@ -11,8 +11,8 @@
 // :pray: :arceus:
 // :pray: :gamegame:
 // :pray: :sinx:
-// :pray: :eyg"
-// :pray: :squares-are-fine:
+// :pray: :eyg:
+// :pray: :evan:
 // :pray: :cj:
 // :pray: :steph:
 // :pray: :fatant:
@@ -31,6 +31,7 @@
 // :pray: :kassuno:
 // :pray: :hyacinth:
 // :pray: :chilli:
+// :pray: :dhruv:
 
 #include <iostream>
 #include <fstream>
