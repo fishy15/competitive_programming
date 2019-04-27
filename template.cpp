@@ -37,6 +37,8 @@
 // :pray: :camel:
 // :pray: :tree:
 // :pray: :tux:
+// :pray: :jony:
+// :pray: :kage:
 
 #include <iostream>
 #include <fstream>
