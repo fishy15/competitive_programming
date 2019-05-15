@@ -41,7 +41,7 @@
 # :pray: :kage:
 # :pray: :ghost:
 
-s = input()
+s = input().lower()
 n = int(input())
 
 flag = False
