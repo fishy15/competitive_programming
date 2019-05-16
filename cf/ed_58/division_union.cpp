@@ -60,27 +60,6 @@
 using namespace std;
 
 int t, n;
-int dsu[MAXN + 1];
-int size[MAXN + 1];
-
-int find(int a) {
-    if (dsu[a] == a) return a;
-    return dsu[a] = find(dsu[a]);
-}
-
-void join(int a, int b) {
-    a = find(a);
-    b = find(b);
-    if (a != b) {
-        if (size[a] < size[b]) {
-            dsu[a] = b;
-            size[b] += size[a];
-        } else {
-            dsu[b] = a;
-            size[a] += size[b];
-        }
-    }
-}
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
@@ -88,34 +67,30 @@ int main() {
     cin >> t;
     while (t--) {
         cin >> n;
-        for (int i = 1; i <= MAXN; i++) {
-            dsu[i] = i;
-            size[i] = 1;
-        }
 
         vector<pair<int, int>> connect;
+        vector<pair<int, int>> original;
         for (int i = 0; i < n; i++) {
-            int a, b; cin >> a >> b;
-            connect.push_back({a, b});
-            join(a, b);
+            int x, y; cin >> x >> y;
+            connect.push_back({x, y});
+            original.push_back({x, y});
         }
 
-        bool works = 0;
-        for (int i = 1; i < n; i++) {
-            if (find(connect[i].first) != find(connect[0].first)) {
-                works = true;
-            }
+        sort(connect.begin(), connect.end());
+
+        int end = connect[0].first;
+        int pos = 0;
+        for (; pos < n; pos++) {
+            if (connect[pos].first > end) break;
+            end = max(end, connect[pos].second);
         }
 
-        if (!works) {
+        if (pos == n) {
             cout << "-1\n";
         } else {
             for (int i = 0; i < n; i++) {
-                if (find(connect[i].first) != find(connect[0].first)) {
-                    cout << "1 ";
-                } else {
-                    cout << "2 ";
-                }
+                if (original[i].second <= end) cout << "2 ";
+                else cout << "1 ";
             }
 
             cout << '\n';
