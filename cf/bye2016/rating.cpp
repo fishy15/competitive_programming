@@ -55,49 +55,20 @@
 #define ll long long
 #define eps 1e-8
 #define MOD 10000007
-#define INF 0x3f3f3f3f
 
 using namespace std;
 
 int n;
 vector<pair<int, int>> vals;
 
-int max_two;
-int min_one = INF;
-bool two;
-bool one;
+int 
 
 int main() {
-    cin.tie(0); ios::sync_with_stdio(0);
-
     cin >> n;
-    int diff = 0;
     for (int i = 0; i < n; i++) {
         int x, y; cin >> x >> y;
-        diff += x;
-
-        vals.push_back({x, diff});
-
-        if (y == 2) {
-            max_two = max(max_two, diff);
-            two = true;
-        } else {
-            min_one = min(min_one, diff);
-            one = true;
-        }
+        vals.push_back{x, y};
     }
 
-    if (!two) {
-        cout << "Infinity\n";
-        return 0;
-    }
 
-    if (min_one >= max_two) {
-        cout << "Impossible\n";
-        return 0;
-    }
-
-    cout << 
-
-    return 0;
 }
