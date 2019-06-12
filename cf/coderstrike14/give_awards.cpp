@@ -59,56 +59,38 @@
 using namespace std;
 
 int n, m;
-vector<vector<int>> unadj;
-vector<bool> visited;
-vector<int> ans;
 
-void dfs(int pos) {
-    int pos2 = 0;
-    visited[pos] = true;
-    sort(unadj[pos].begin(), unadj[pos].end());
-    for (int i = 0; i < n; i++) {
-        if (pos2 < unadj[pos].size()) {
-            if (unadj[pos][pos2] == i) {
-                pos2++;
-            } else {
-                if (!visited[i]) {
-                    dfs(i);
-                }
-            }
-        } else {
-            if (!visited[i]) {
-                dfs(i); 
-            }
-        }
-    }
-
-    ans.push_back(pos);
-}
+vector<set<int>> bad;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
 
     cin >> n >> m;
 
-    unadj = vector<vector<int>>(n);
-    visited = vector<bool>(n, false);
+    bad = vector<set<int>>(n + 1);
 
     for (int i = 0; i < m; i++) {
         int x, y; cin >> x >> y;
-        x--; y--;
-        unadj[x].push_back(y);
+        bad[x].insert(y);
+    }
+
+    vector<int> ans;
+    for (int i = 1; i <= n; i++) {
+        int pos = (int)(ans.size());
+
+        if (pos > 0)
+        while (pos > 0 && bad[ans[pos - 1]].count(i)) {
+            pos--;
+        }
+        
+        //cout << "pos: " << pos << '\n';
+        ans.insert(ans.begin() + pos, i);
     }
 
     for (int i = 0; i < n; i++) {
-        if (!visited[i]) {
-            dfs(i);
-        }
+        cout << ans[i] << ' ';
     }
-
-    for (int i = n - 1; i >= 0; i--) {
-        cout << ans[i] + 1 << ' ';
-    } cout << '\n';
+    cout << '\n';
 
     return 0;
 }
