@@ -65,7 +65,7 @@ int main() {
     cin.tie(0); ios::sync_with_stdio(0);
 
     cin >> n;
-    nums[0] = 1;
+    nums[0] = 1'
 
     for (int i = 1; i <= n; i++) {
         for (int d = 1; d <= 6; d++) {

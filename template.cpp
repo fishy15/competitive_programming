@@ -41,6 +41,7 @@
 // :pray: :kage:
 // :pray: :ghost:
 // :pray: :aha:
+// :pray: :coolguy:
 
 #include <iostream>
 #include <fstream>
@@ -54,7 +55,13 @@
 
 #define ll long long
 #define eps 1e-8
-#define MOD 10000007
+#define MOD 1000000007
+
+#define INF 0x3f3f3f3f
+#define INFLL 0x3f3f3f3f3f3f3f3f
+
+// change if necessary
+#define MAXN 1000000
 
 using namespace std;
 
