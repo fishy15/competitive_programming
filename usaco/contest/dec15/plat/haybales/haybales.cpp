@@ -51,6 +51,7 @@
 // :pray: :bigc:
 
 #include <iostream>
+#include <stdio.h>
 #include <fstream>
 #include <vector>
 #include <algorithm>
@@ -105,27 +106,28 @@ int build_sum(int v, int l, int r) {
 void push(int v) {
     lazy[2 * v] += lazy[v];  
     lazy[2 * v + 1] += lazy[v];
+    t_min[v] += lazy[v];
+    t_sum[v] += lazy[v];
     lazy[v] = 0;
 }
 
 void update(int v, int x, int y, int d, int l = 1, int r = n) {
     if (x <= l && r <= y) {
         lazy[v] += d;
-    } else {
+        t_min[v] += d;
+        t_sum[v] += d;
+    } else if (l <= y && r >= x) {
         push(v);
         int mid = l + (r - l) / 2;
-        if (l <= mid) {
-            update(2 * v, x, y, d, l, mid);
-        }
-
-        if (r >= mid + 1) {
-            update(2 * v + 1, x, y, d, mid + 1, r);
-        }
+        update(2 * v, x, y, d, l, mid);
+        update(2 * v + 1, x, y, d, mid + 1, r);
+        t_sum[v] = t_sum[2 * v] + t_sum[2 * v + 1];
+        t_min[v] = min(t_min[2 * v], t_min[2 * v + 1]);
     }
 }
 
 int query_min(int v, int x, int y, int l = 1, int r = n) {
-    if (l <= x && y <= r) {
+    if (x <= l && r <= y) {
         return t_min[v] + lazy[v];
     }
 
@@ -137,11 +139,12 @@ int query_min(int v, int x, int y, int l = 1, int r = n) {
     int mid = l + (r - l) / 2;
     int left = query_min(2 * v, x, y, l, mid);
     int right = query_min(2 * v + 1, x, y, mid + 1, r);
-    return min(left, right) + lazy[v];
+    return min(left, right);
 }
 
 int query_sum(int v, int x, int y, int l = 1, int r = n) {
-    if (l <= x && y <= r) {
+    if (x <= l && r <= y) {
+        cout << t_sum[v] << ' ' << lazy[v] << '\n';
         return t_sum[v] + lazy[v] * (r - l + 1);
     }
 
@@ -152,8 +155,8 @@ int query_sum(int v, int x, int y, int l = 1, int r = n) {
     push(v);
     int mid = l + (r - l) / 2;
     int left = query_sum(2 * v, x, y, l, mid);
-    int right = query_sum(2 * v + 1, x, y, mid + 2, r);
-    return left + right + lazy[v] * (r - l + 1);
+    int right = query_sum(2 * v + 1, x, y, mid + 1, r);
+    return left + right;
 }
 
 int main() {
@@ -175,6 +178,9 @@ int main() {
         } else if (code == 'P') {
             int l, r, c; cin >> l >> r >> c;
             update(1, l, r, c);
+            for (int i = 0; i <= 16; i++) {
+                cout << lazy[i] << '\n';
+            }
         } else if (code == 'S') {
             int l, r; cin >> l >> r;
             cout << query_sum(1, l, r) << '\n';
