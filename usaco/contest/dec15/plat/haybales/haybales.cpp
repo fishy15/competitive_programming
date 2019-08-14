@@ -83,8 +83,9 @@ int build_min(int v, int l, int r) {
         return t_min[v] = a[l];
     }
 
-    int min_l = build_min(2 * v, l, l + (r - l) / 2);
-    int min_r = build_min(2 * v + 1, r - (r - l) / 2, r);
+    int mid = l + (r - l) / 2;
+    int min_l = build_min(2 * v, l, mid);
+    int min_r = build_min(2 * v + 1, mid + 1, r);
 
     return t_min[v] = min(min_l, min_r);
 }
@@ -94,8 +95,9 @@ int build_sum(int v, int l, int r) {
         return t_sum[v] = a[l];
     }
 
-    int sum_l = build_sum(2 * v, l, l + (r - l) / 2);
-    int sum_r = build_sum(2 * v + 1, r - (r - l) / 2, r);
+    int mid = l + (r - l) / 2;
+    int sum_l = build_sum(2 * v, l, mid);
+    int sum_r = build_sum(2 * v + 1, mid + 1, r);
 
     return t_sum[v] = sum_l + sum_r;
 }
@@ -112,9 +114,11 @@ void update(int v, int x, int y, int d, int l = 1, int r = n) {
     } else {
         push(v);
         int mid = l + (r - l) / 2;
-        if (l <= n && n <= l + (r - l) / 2) {
+        if (l <= mid) {
             update(2 * v, x, y, d, l, mid);
-        } else {
+        }
+
+        if (r >= mid + 1) {
             update(2 * v + 1, x, y, d, mid + 1, r);
         }
     }
