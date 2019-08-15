@@ -104,6 +104,7 @@ int build_sum(int v, int l, int r) {
 }
 
 void push(int v) {
+    cout << "PUSH " << lazy[v] << '\n';
     lazy[2 * v] += lazy[v];  
     lazy[2 * v + 1] += lazy[v];
     t_min[v] += lazy[v];
@@ -121,7 +122,7 @@ void update(int v, int x, int y, int d, int l = 1, int r = n) {
         int mid = l + (r - l) / 2;
         update(2 * v, x, y, d, l, mid);
         update(2 * v + 1, x, y, d, mid + 1, r);
-        t_sum[v] = t_sum[2 * v] + t_sum[2 * v + 1];
+        t_sum[v] = t_min[2 * v] + t_min[2 * v + 1];
         t_min[v] = min(t_min[2 * v], t_min[2 * v + 1]);
     }
 }
@@ -179,7 +180,7 @@ int main() {
             int l, r, c; cin >> l >> r >> c;
             update(1, l, r, c);
             for (int i = 0; i <= 16; i++) {
-                cout << lazy[i] << '\n';
+                cout << t_sum[i] << '\n';
             }
         } else if (code == 'S') {
             int l, r; cin >> l >> r;
