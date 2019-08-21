@@ -43,22 +43,12 @@
 // :pray: :aha:
 // :pray: :coolguy:
 // :pray: :imax:
-// :pray: :xyzyzl:
+// :pray: :howlet:
 // :pray: :darren:
 // :pray: :arie: 
 // :pray: :blastman: 
 // :pray: :zephyr: 
 // :pray: :bigc:
-// :pray: :aeren: 
-// :pray: :proactiveman:
-// :pray: :jkiplo:
-// :pray: :suneet:
-// :pray: :teh:
-// :pray: :numb:
-// :pray: :sriraamaster:
-// :pray: :hwl:
-// :pray: :dajeff:
-// :pray: :uwunoob:
 
 #include <iostream>
 #include <fstream>
@@ -82,8 +72,44 @@
 
 using namespace std;
 
+struct horz {
+    int x1;
+    int x2;
+    int y;
+};
+
+struct vert {
+    int x;
+    int y1;
+    int y2;
+};
+
+
+int n;
+int hsz, vsz;
+vector<horz> h;
+vector<vert> v;
+
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int x1, x2, y1, y2; cin >> x1 >> x2 >> y1 >> y2;
+        if (x1 == x2) {
+            vert l;
+            l.x = x1;
+            l.y1 = y1;
+            l.y2 = y2;
+            v.push_back(l);
+        } else {
+            horz l;
+            l.x1 = x1;
+            l.x2 = x2;
+            l.y = y1;
+            h.push_back(l);
+        }
+    }
 
     return 0;
 }

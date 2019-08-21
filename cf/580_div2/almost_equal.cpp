@@ -43,22 +43,12 @@
 // :pray: :aha:
 // :pray: :coolguy:
 // :pray: :imax:
-// :pray: :xyzyzl:
+// :pray: :howlet:
 // :pray: :darren:
 // :pray: :arie: 
 // :pray: :blastman: 
 // :pray: :zephyr: 
 // :pray: :bigc:
-// :pray: :aeren: 
-// :pray: :proactiveman:
-// :pray: :jkiplo:
-// :pray: :suneet:
-// :pray: :teh:
-// :pray: :numb:
-// :pray: :sriraamaster:
-// :pray: :hwl:
-// :pray: :dajeff:
-// :pray: :uwunoob:
 
 #include <iostream>
 #include <fstream>
@@ -78,12 +68,36 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 1000000
+#define MAXN 200000
 
 using namespace std;
+
+int n;
+int nums[MAXN];
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
 
+    cin >> n;
+    if (n % 2 == 0) {
+        cout << "NO\n";
+        return 0;
+    }
+    int pos = 0;
+    for (int i = 0; i < 2 * n; i++) {
+        nums[pos] = i + 1;
+        if (i % 2 == 0) {
+            pos += n;
+        } else {
+            pos--;
+        }
+        pos %= 2*n;
+    }
+
+    cout << "YES\n";
+    for (int i = 0; i < 2*n; i++) {
+        cout << nums[i] << ' ';
+    }
+    cout << '\n';
     return 0;
 }

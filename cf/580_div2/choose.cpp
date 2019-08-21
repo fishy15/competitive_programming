@@ -43,22 +43,12 @@
 // :pray: :aha:
 // :pray: :coolguy:
 // :pray: :imax:
-// :pray: :xyzyzl:
+// :pray: :howlet:
 // :pray: :darren:
 // :pray: :arie: 
 // :pray: :blastman: 
 // :pray: :zephyr: 
 // :pray: :bigc:
-// :pray: :aeren: 
-// :pray: :proactiveman:
-// :pray: :jkiplo:
-// :pray: :suneet:
-// :pray: :teh:
-// :pray: :numb:
-// :pray: :sriraamaster:
-// :pray: :hwl:
-// :pray: :dajeff:
-// :pray: :uwunoob:
 
 #include <iostream>
 #include <fstream>
@@ -82,8 +72,30 @@
 
 using namespace std;
 
+int n, m;
+vector<int> a;
+vector<int> b;
+
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int x; cin >> x;
+        a.push_back(x);
+    }
+
+    cin >> m;
+    for (int i = 0; i < m; i++) {
+        int x; cin >> x;
+        b.push_back(x);
+    }
+
+
+    sort(a.begin(), a.end());
+    sort(b.begin(), b.end());
+
+    cout << a[n - 1] << ' ' << b[m - 1] << '\n';
 
     return 0;
 }

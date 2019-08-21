@@ -1,7 +1,7 @@
 // :pray: :arrayman:
 // :pray: :summit:
 // :pray: :pusheen:
-// :pray: :prodakcin:
+// :pray: :prodakfin:
 // :pray: :spacewalker:
 // :pray: :duk:
 // :pray: :gustav:
@@ -29,7 +29,7 @@
 // :pray: :dorijanko:
 // :pray: :gaming:
 // :pray: :kassuno:
-// :pray: :hyacinth:
+// :pray: :hyafinth:
 // :pray: :chilli:
 // :pray: :dhruv:
 // :pray: :philip:
@@ -69,65 +69,63 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 100000
+#define MAXN 200000
 
 using namespace std;
 
 int n, q;
-int a[MAXN + 1];
-int t_min[4 * MAXN + 4];
-int t_sum[4 * MAXN + 4];
-int lazy[4 * MAXN + 4];
+ll a[MAXN + 1];
+ll t_min[4 * MAXN + 5];
+ll t_sum[4 * MAXN + 5];
+ll lazy[4 * MAXN + 5];
 
-int build_min(int v, int l, int r) {
+ll build_min(int v, int l, int r) {
     if (l == r) {
         return t_min[v] = a[l];
     }
 
     int mid = l + (r - l) / 2;
-    int min_l = build_min(2 * v, l, mid);
-    int min_r = build_min(2 * v + 1, mid + 1, r);
+    ll min_l = build_min(2 * v, l, mid);
+    ll min_r = build_min(2 * v + 1, mid + 1, r);
 
     return t_min[v] = min(min_l, min_r);
 }
 
-int build_sum(int v, int l, int r) {
+ll build_sum(int v, int l, int r) {
     if (l == r) {
         return t_sum[v] = a[l];
     }
 
     int mid = l + (r - l) / 2;
-    int sum_l = build_sum(2 * v, l, mid);
-    int sum_r = build_sum(2 * v + 1, mid + 1, r);
+    ll sum_l = build_sum(2 * v, l, mid);
+    ll sum_r = build_sum(2 * v + 1, mid + 1, r);
 
     return t_sum[v] = sum_l + sum_r;
 }
 
-void push(int v) {
-    cout << "PUSH " << lazy[v] << '\n';
+void push(int v, int l, int r) {
     lazy[2 * v] += lazy[v];  
     lazy[2 * v + 1] += lazy[v];
     t_min[v] += lazy[v];
-    t_sum[v] += lazy[v];
+    t_sum[v] += lazy[v] * (r - l + 1);
     lazy[v] = 0;
 }
 
 void update(int v, int x, int y, int d, int l = 1, int r = n) {
+    //printf("%d %d %d %d %d %d\n", v, x, y, d, l, r);
     if (x <= l && r <= y) {
         lazy[v] += d;
-        t_min[v] += d;
-        t_sum[v] += d;
     } else if (l <= y && r >= x) {
-        push(v);
+        push(v, l, r);
         int mid = l + (r - l) / 2;
         update(2 * v, x, y, d, l, mid);
         update(2 * v + 1, x, y, d, mid + 1, r);
-        t_sum[v] = t_min[2 * v] + t_min[2 * v + 1];
-        t_min[v] = min(t_min[2 * v], t_min[2 * v + 1]);
+        t_sum[v] = t_sum[2 * v] + t_sum[2 * v + 1] + lazy[2 * v] * (mid - l + 1) + lazy[2 * v + 1] * (r - mid);
+        t_min[v] = min(t_min[2 * v] + lazy[2 * v], t_min[2 * v + 1] + lazy[2 * v + 1]);
     }
 }
 
-int query_min(int v, int x, int y, int l = 1, int r = n) {
+ll query_min(int v, int x, int y, int l = 1, int r = n) {
     if (x <= l && r <= y) {
         return t_min[v] + lazy[v];
     }
@@ -136,16 +134,15 @@ int query_min(int v, int x, int y, int l = 1, int r = n) {
         return INF;
     }
 
-    push(v);
+    push(v, l, r);
     int mid = l + (r - l) / 2;
-    int left = query_min(2 * v, x, y, l, mid);
-    int right = query_min(2 * v + 1, x, y, mid + 1, r);
+    ll left = query_min(2 * v, x, y, l, mid);
+    ll right = query_min(2 * v + 1, x, y, mid + 1, r);
     return min(left, right);
 }
 
-int query_sum(int v, int x, int y, int l = 1, int r = n) {
+ll query_sum(int v, int x, int y, int l = 1, int r = n) {
     if (x <= l && r <= y) {
-        cout << t_sum[v] << ' ' << lazy[v] << '\n';
         return t_sum[v] + lazy[v] * (r - l + 1);
     }
 
@@ -153,38 +150,39 @@ int query_sum(int v, int x, int y, int l = 1, int r = n) {
         return 0;
     }
 
-    push(v);
+    push(v, l, r);
     int mid = l + (r - l) / 2;
-    int left = query_sum(2 * v, x, y, l, mid);
-    int right = query_sum(2 * v + 1, x, y, mid + 1, r);
+    ll left = query_sum(2 * v, x, y, l, mid);
+    ll right = query_sum(2 * v + 1, x, y, mid + 1, r);
     return left + right;
 }
 
 int main() {
-    cin.tie(0); ios::sync_with_stdio(0);
-
-    cin >> n >> q;
+    ifstream fin("haybales.in");
+    ofstream fout("haybales.out");
+    
+    fin >> n >> q;
     for (int i = 1; i <= n; i++) {
-        cin >> a[i];
+        fin >> a[i];
     }
 
     build_min(1, 1, n);
     build_sum(1, 1, n);
 
+    int count = 0;
     while (q--) {
-        char code; cin >> code;
+        //printf("%d\n", count);
+        count++;
+        char code; fin >> code;
         if (code == 'M') {
-            int l, r; cin >> l >> r;
-            cout << query_min(1, l, r) << '\n';
+            int l, r; fin >> l >> r;
+            fout << query_min(1, l, r) << '\n';
         } else if (code == 'P') {
-            int l, r, c; cin >> l >> r >> c;
+            int l, r, c; fin >> l >> r >> c;
             update(1, l, r, c);
-            for (int i = 0; i <= 16; i++) {
-                cout << t_sum[i] << '\n';
-            }
         } else if (code == 'S') {
-            int l, r; cin >> l >> r;
-            cout << query_sum(1, l, r) << '\n';
+            int l, r; fin >> l >> r;
+            fout << query_sum(1, l, r) << '\n';
         }
     }
 

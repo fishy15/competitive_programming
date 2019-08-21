@@ -43,22 +43,12 @@
 // :pray: :aha:
 // :pray: :coolguy:
 // :pray: :imax:
-// :pray: :xyzyzl:
+// :pray: :howlet:
 // :pray: :darren:
 // :pray: :arie: 
 // :pray: :blastman: 
 // :pray: :zephyr: 
 // :pray: :bigc:
-// :pray: :aeren: 
-// :pray: :proactiveman:
-// :pray: :jkiplo:
-// :pray: :suneet:
-// :pray: :teh:
-// :pray: :numb:
-// :pray: :sriraamaster:
-// :pray: :hwl:
-// :pray: :dajeff:
-// :pray: :uwunoob:
 
 #include <iostream>
 #include <fstream>
@@ -82,8 +72,40 @@
 
 using namespace std;
 
+int n;
+vector<int> nums;
+
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
 
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        int x; cin >> x;
+        nums.push_back(x);
+    }
+
+    ll pos = 0;
+    ll neg = 0;
+    ll neg_cnt = 0;
+    ll zero = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (nums[i] >= 1) {
+            pos += nums[i] - 1;
+        } else if (nums[i] <= -1) {
+            neg += -nums[i] - 1;
+            neg_cnt++;
+        } else {
+            zero++;
+        }
+    }
+
+    if (zero > 0) {
+        cout << pos + neg + zero << '\n';
+    } else if (neg_cnt % 2 == 1) {
+        cout << pos + neg + 2 << '\n';
+    } else {
+        cout << pos + neg << '\n';
+    }
     return 0;
 }
