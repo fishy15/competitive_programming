@@ -1,69 +1,9 @@
-// :pray: :arrayman:
-// :pray: :summit:
-// :pray: :pusheen:
-// :pray: :prodakcin:
-// :pray: :spacewalker:
-// :pray: :duk:
-// :pray: :gustav:
-// :pray: :tmw:
-// :pray: :eed:
-// :pray: :chicubed:
-// :pray: :arceus:
-// :pray: :gamegame:
-// :pray: :sinx:
-// :pray: :eyg:
-// :pray: :evan:
-// :pray: :cj:
-// :pray: :steph:
-// :pray: :fatant:
-// :pray: :mathbot:
-// :pray: :dolphin:
-// :pray: :stef:
-// :pray: :geothermal:
-// :pray: :mikey:
-// :pray: :horse:
-// :pray: :snek:
-// :pray: :wayne:
-// :pray: :wu:
-// :pray: :vmaddur:
-// :pray: :dorijanko:
-// :pray: :gaming:
-// :pray: :kassuno:
-// :pray: :hyacinth:
-// :pray: :chilli:
-// :pray: :dhruv:
-// :pray: :philip:
-// :pray: :paiman:
-// :pray: :camel:
-// :pray: :tree:
-// :pray: :tux:
-// :pray: :jony:
-// :pray: :kage:
-// :pray: :ghost:
-// :pray: :aha:
-// :pray: :coolguy:
-// :pray: :imax:
-// :pray: :xyzyzl:
-// :pray: :darren:
-// :pray: :arie: 
-// :pray: :blastman: 
-// :pray: :zephyr: 
-// :pray: :bigc:
-// :pray: :aeren: 
-// :pray: :proactiveman:
-// :pray: :jkiplo:
-// :pray: :suneet:
-// :pray: :teh:
-// :pray: :numb:
-// :pray: :sriraamaster:
-// :pray: :hwl:
-// :pray: :dajeff:
-// :pray: :uwunoob:
-// :pray: :rythm:
+// :pray: :fishy:
 
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <array>
 #include <algorithm>
 #include <utility>
 #include <map>

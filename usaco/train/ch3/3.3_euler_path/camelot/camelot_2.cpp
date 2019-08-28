@@ -141,6 +141,34 @@ void find_dist(int i) {
             }
         }
     }
+
+    q = {};
+    for (auto x : start) {
+        q.push({x.first, x.second, 1, mini});
+    }
+    while (!q.empty()) {
+        array<int, 4> cur = q.front();
+        q.pop();
+
+        if (dist[i][cur[0]][cur[1]][cur[2]] < cur[3]) {
+            continue;
+        }
+
+        cout << cur[3] << '\n';
+
+        dist[i][cur[0]][cur[1]][cur[2]] = cur[3];
+
+        for (auto m : moves) {
+            int new_x = cur[0] + m.first;
+            int new_y = cur[1] + m.second;
+
+            if (new_x >= 0 && new_y >= 0 && new_x < r && new_y < c) {
+                if (dist[i][new_x][new_y][1] >= cur[3] + 1) {
+                    q.push({new_x, new_y, 0, cur[3] + 1});
+                }
+            }
+        }
+    }
 }
 
 int main() {
