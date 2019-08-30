@@ -34,7 +34,7 @@ LANG: C++11
 // :pray: :dorijanko:
 // :pray: :gaming:
 // :pray: :kassuno:
-// :pray: :hyacinth:
+// :pray: :hyacllh:
 // :pray: :chilli:
 // :pray: :dhruv:
 // :pray: :philip:
@@ -78,13 +78,14 @@ LANG: C++11
 
 using namespace std;
 
-int r, c;
-int k;
-pair<int, int> king;
-vector<pair<int, int>> knights;
-int dist[780][26][30][2];
+ll r, c;
+ll k;
+pair<ll, ll> king;
+vector<pair<ll, ll>> knights;
+ll dist[780][26][30][2];
+bool vist[780][26][30][2];
 
-vector<pair<int, int>> moves = {
+vector<pair<ll, ll>> moves = {
     {1, 2},
     {1, -2},
     {-1, 2},
@@ -95,43 +96,42 @@ vector<pair<int, int>> moves = {
     {-2, -1}
 };
 
-bool comp(const array<int, 4> &a1, const array<int, 4> &a2) {
+bool comp(const array<ll, 4> &a1, const array<ll, 4> &a2) {
     return a1[3] > a2[3];
 }
 
-void find_dist(int i) {
-    array<int, 4> arr = {knights[i].first, knights[i].second, 0, 0};
-    //priority_queue<array<int, 4>, vector<array<int, 4>>, decltype(&comp)>q(comp);
-    queue<array<int, 4>> q;
+void find_dist(ll i) {
+    array<ll, 4> arr = {knights[i].first, knights[i].second, 0, 0};
+    //priority_queue<array<ll, 4>, vector<array<ll, 4>>, decltype(&comp)>q(comp);
+    queue<array<ll, 4>> q;
     q.push(arr);
     while (!q.empty()) {
-        array<int, 4> cur = q.front();
+        array<ll, 4> cur = q.front();
         q.pop();
 
-        if (dist[i][cur[0]][cur[1]][cur[2]] || \
-                (cur[0] == knights[i].first && cur[1] == knights[i].second && cur[2] == 0 && cur[3] > 0)) {
+        if (vist[i][cur[0]][cur[1]][cur[2]]) {
             continue;
         }
 
         dist[i][cur[0]][cur[1]][cur[2]] = cur[3];
+        vist[i][cur[0]][cur[1]][cur[2]] = true;
 
         for (auto m : moves) {
-            int new_x = cur[0] + m.first;
-            int new_y = cur[1] + m.second;
+            ll new_x = cur[0] + m.first;
+            ll new_y = cur[1] + m.second;
 
             if (new_x >= 0 && new_y >= 0 && new_x < r && new_y < c) {
-                if (!dist[i][new_x][new_y][0] && \
-                    !(new_x == knights[i].first && new_y == knights[i].second)) {
+                if (!vist[i][new_x][new_y][0]) {
                     q.push({new_x, new_y, 0, cur[3] + 1});
                 }
             }
         }
     }
 
-    vector<pair<int, int>> start;
-    int mini = INF;
-    for (int j = 0; j < r; j++) {
-        for (int k = 0; k < c; k++) {
+    vector<pair<ll, ll>> start;
+    ll mini = INF;
+    for (ll j = 0; j < r; j++) {
+        for (ll k = 0; k < c; k++) {
             dist[i][j][k][1] = dist[i][j][k][0] + max(abs(king.first - j), abs(king.second - k));
             if (dist[i][j][k][1] < mini) {
                 start = {{j, k}};
@@ -143,28 +143,31 @@ void find_dist(int i) {
     }
 
     q = {};
+    priority_queue<array<ll, 4>, vector<array<ll, 4>>, decltype(&comp)>q2(comp);
     for (auto x : start) {
         q.push({x.first, x.second, 1, mini});
     }
     while (!q.empty()) {
-        array<int, 4> cur = q.front();
+        array<ll, 4> cur = q.top();
         q.pop();
 
-        if (dist[i][cur[0]][cur[1]][cur[2]] < cur[3]) {
+        if (vist[i][cur[0]][cur[1]][1]) {
             continue;
         }
 
-        cout << cur[3] << '\n';
+        //cout << cur[3] << '\n';
 
         dist[i][cur[0]][cur[1]][cur[2]] = cur[3];
+        vist[i][cur[0]][cur[1]][cur[2]] = true;
 
         for (auto m : moves) {
-            int new_x = cur[0] + m.first;
-            int new_y = cur[1] + m.second;
+            ll new_x = cur[0] + m.first;
+            ll new_y = cur[1] + m.second;
 
             if (new_x >= 0 && new_y >= 0 && new_x < r && new_y < c) {
-                if (dist[i][new_x][new_y][1] >= cur[3] + 1) {
-                    q.push({new_x, new_y, 0, cur[3] + 1});
+                ll d = min(dist[i][new_x][new_y][1], cur[3] + 1);
+                if (!vist[i][new_x][new_y][1]) {
+                    q.push({new_x, new_y, 1, d});
                 }
             }
         }
@@ -176,34 +179,34 @@ int main() {
     ofstream fout("camelot.out");
 
     fin >> r >> c;
-    char kf; int ks; fin >> kf >> ks;
+    char kf; ll ks; fin >> kf >> ks;
     king = {kf - 'A', ks - 1};
 
     //cout << king.first << ' ' << king.second << '\n';
-    for (int i = 0; i < r * c; i++) {
-        char kr; int kc; fin >> kr >> kc;
+    for (ll i = 0; i < r * c; i++) {
+        char kr; ll kc; fin >> kr >> kc;
         //cout << "TEST\n";
         //cout << kr << ' ' << kc << '\n';
         if (fin.eof()){
             break;
         }
-        pair<int, int> k = {kr - 'A', kc - 1};
+        pair<ll, ll> k = {kr - 'A', kc - 1};
         knights.push_back(k);
     }
 
-    k = (int)(knights.size());
+    k = (ll)(knights.size());
 
-    for (int i = 0; i < k; i++) {
+    for (ll i = 0; i < k; i++) {
         find_dist(i);
     }
 
-    int mini = INF;
+    ll mini = INF;
 
-    for (int x = 0; x < r; x++) {
-        for (int y = 0; y < r; y++) {
-            for (int i = 0; i < k; i++) {
-                int sum = 0;
-                for (int j = 0; j < k; j++) {
+    for (ll x = 0; x < r; x++) {
+        for (ll y = 0; y < r; y++) {
+            for (ll i = 0; i < k; i++) {
+                ll sum = 0;
+                for (ll j = 0; j < k; j++) {
                     if (i == j) {
                         sum += dist[j][x][y][1];
                     } else {
@@ -222,10 +225,10 @@ int main() {
         fout << mini << '\n';
     }
 
-    /* for (int a = 0; a < 4; a++) { */
-    /*     for (int b = 0; b < 2; b++) { */
-    /*         for (int i = 0; i < r; i++) { */
-    /*             for (int j = 0; j < c; j++) { */
+    /* for (ll a = 0; a < 4; a++) { */
+    /*     for (ll b = 0; b < 2; b++) { */
+    /*         for (ll i = 0; i < r; i++) { */
+    /*             for (ll j = 0; j < c; j++) { */
     /*                 cout << dist[a][i][j][b] << ' '; */
     /*             } */
 
