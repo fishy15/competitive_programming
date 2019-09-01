@@ -48,15 +48,18 @@ vector<pair<int, int>> moves = {
     {-2, -1}
 };
 
-bool comp(const array<int, 3> &a, const array<int, 3> &b) {
-    if (a[2] == b[2]) {
-        if (a[1] == b[1]) {
-            return a[0] > b[0];
+class Compare {
+public:
+    bool operator()(const array<int, 3> &a, const array<int, 3> &b) {
+        if (a[2] == b[2]) {
+            if (a[1] == b[1]) {
+                return a[0] > b[0];
+            }
+            return a[1] > b[1];
         }
-        return a[1] > b[1];
+        return a[2] > b[2];
     }
-    return a[2] > b[2];
-}
+};
 
 void calc_dist(int i) {
     queue<array<int, 3>> q;
@@ -86,25 +89,24 @@ void calc_dist(int i) {
     }
 
     int mini = INF;
-    priority_queue<array<int, 3>, vector<array<int, 3>>, decltype(&comp)> q2(comp);
+    //priority_queue<array<int, 3>, vector<array<int, 3>>, Compare> q2;
     for (int j = 0; j < c; j++) {
         for (int k = 0; k < r; k++) {
             dist[i][j][k][1] = dist[i][j][k][0] + max(abs(king.first - i), abs(king.second - j));
 
             if (dist[i][j][k][1] < mini) {
-                q2 = {};
+                q = {};
                 mini = dist[i][j][k][1];
-                q2.push({j, k, dist[i][j][k][1]});
+                q.push({j, k, dist[i][j][k][1]});
             } else if (dist[i][j][k][1] == mini) {
-                q2.push({j, k, dist[i][j][k][1]});
+                q.push({j, k, dist[i][j][k][1]});
             }
         }
     }
 
-    while (!q2.empty()) {
-        cout << q2.size() << '\n';
-        array<int, 3> cur = q2.top();
-        q2.pop();
+    while (!q.empty()) {
+        array<int, 3> cur = q.front();
+        q.pop();
 
         if (vist[i][cur[0]][cur[1]][1]) {
             continue;
@@ -120,7 +122,7 @@ void calc_dist(int i) {
             if (new_x >= 0 && new_x < c && new_y >= 0 && new_y < r) {
                 if (!vist[i][new_x][new_y][1]) {
                     int d = min(dist[i][new_x][new_y][1], cur[2] + 1);
-                    q2.push({new_x, new_y, d});
+                    q.push({new_x, new_y, d});
                 }
             }
         }
@@ -180,7 +182,7 @@ int main() {
                 sum -= dist[i][x][y][0];
                 sum += dist[i][x][y][1];
                 mini = min(mini, sum);
-                cout << sum << '\n';
+                //cout << sum << '\n';
                 sum -= dist[i][x][y][1];
                 sum += dist[i][x][y][0];
             }
