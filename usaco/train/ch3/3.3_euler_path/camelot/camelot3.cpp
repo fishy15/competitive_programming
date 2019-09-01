@@ -89,24 +89,36 @@ void calc_dist(int i) {
     }
 
     int mini = INF;
-    //priority_queue<array<int, 3>, vector<array<int, 3>>, Compare> q2;
+    priority_queue<array<int, 3>, vector<array<int, 3>>, Compare> q2;
     for (int j = 0; j < c; j++) {
         for (int k = 0; k < r; k++) {
-            dist[i][j][k][1] = dist[i][j][k][0] + max(abs(king.first - i), abs(king.second - j));
+            dist[i][j][k][1] = dist[i][j][k][0] + max(abs(king.first - j), abs(king.second - k));
 
             if (dist[i][j][k][1] < mini) {
-                q = {};
+                q={};
+                q2 = {};
                 mini = dist[i][j][k][1];
+                q2.push({j, k, dist[i][j][k][1]});
                 q.push({j, k, dist[i][j][k][1]});
             } else if (dist[i][j][k][1] == mini) {
+                q2.push({j, k, dist[i][j][k][1]});
                 q.push({j, k, dist[i][j][k][1]});
             }
         }
     }
 
-    while (!q.empty()) {
-        array<int, 3> cur = q.front();
-        q.pop();
+    if (i == 0) {
+        //cout << mini << '\n';
+        while (!q.empty()) {
+            auto cur = q.front();
+            //cout << cur[0] << ' ' << cur[1] << ' ' << cur[2] << '\n';
+            q.pop();
+        }
+    }
+
+    while (!q2.empty()) {
+        array<int, 3> cur = q2.top();
+        q2.pop();
 
         if (vist[i][cur[0]][cur[1]][1]) {
             continue;
@@ -122,7 +134,7 @@ void calc_dist(int i) {
             if (new_x >= 0 && new_x < c && new_y >= 0 && new_y < r) {
                 if (!vist[i][new_x][new_y][1]) {
                     int d = min(dist[i][new_x][new_y][1], cur[2] + 1);
-                    q.push({new_x, new_y, d});
+                    q2.push({new_x, new_y, d});
                 }
             }
         }
@@ -174,8 +186,17 @@ int main() {
     for (int x = 0; x < c; x++) {
         for (int y = 0; y < r; y++) {
             int sum = 0;
+            bool flag = false;
             for (int i = 0; i < sz; i++) {
                 sum += dist[i][x][y][0];
+                if (dist[i][x][y][0] == INF) {
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (flag) {
+                break;
             }
 
             for (int i = 0; i < sz; i++) {
@@ -189,6 +210,30 @@ int main() {
         }
     }
 
+    /* cout << dist[0][13][15][1]; */
+    /* for (int i = 1; i < sz; i++) { */
+    /*     cout << dist[i][13][15][0] << '\n'; */
+    /* } */
+
+    /* for (int i = 0; i < c; i++) { */
+    /*     for (int j = 0; j < r; j++) { */
+    /*         cout << dist[0][i][j][0] << ' '; */
+    /*     } */
+    /*     cout << '\n'; */
+    /* } */
+
+    /* for (int i = 0; i < c; i++) { */
+    /*     for (int j = 0; j < r; j++) { */
+    /*         cout << dist[0][i][j][1] << ' '; */
+    /*     } */
+    /*     cout << '\n'; */
+    /* } */
+    if (mini == INF) {
+        if (sz == 1) {
+            fout << max(abs(king.first - knights[0].first), abs(king.second - knights[0].second)) << '\n';
+            return 0;
+        }
+    }
     fout << mini << '\n';
 
     return 0;
