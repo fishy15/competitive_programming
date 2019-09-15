@@ -1,47 +1,61 @@
-int arr[MAXN + 1];
-int tree[4 * MAXN + 4];
+class segtree {
+    int n;
+    vector<int> arr;
+    vector<int> tree;
 
-void build(int node, int left, int right) {
-    if (left == right) {
-        tree[node] = arr[left];
-    } else {
-        int mid = (left + right) / 2;
-        
-        build(2 * node, left, mid);
-        build(2 * node + 1, mid + 1, right);
-        
-        tree[node] = min(tree[2 * node], tree[2 * node + 1]);
+    segtree(int n, vector<int> &arr) {
+        this->n = n;
+        this->arr = {0};
+        for (int i = 0; i < n; i++) {
+            this->arr.push_back(arr[i]);
+        }
+
+        tree = vector<int>(4 * n + 4);
+        build(1, 1, n);
     }
-}
 
-void update(int node, int left, int right, int index, int value) {
-    if (left == right) {
-        arr[index] = value;
-        tree[node] = value;
-    } else {
-        int mid = (left + right) / 2;
-        if (index <= mid) {
-            update(2 * node, left, mid, index, value);
+    void build(int node, int left, int right) {
+        if (left == right) {
+            tree[node] = arr[left];
         } else {
-            update(2 * node + 1, mid + 1, right, index, value);
+            int mid = (left + right) / 2;
+            
+            build(2 * node, left, mid);
+            build(2 * node + 1, mid + 1, right);
+            
+            tree[node] = min(tree[2 * node], tree[2 * node + 1]);
+        }
+    }
+
+    void update(int node, int left, int right, int index, int value) {
+        if (left == right) {
+            arr[index] = value;
+            tree[node] = value;
+        } else {
+            int mid = (left + right) / 2;
+            if (index <= mid) {
+                update(2 * node, left, mid, index, value);
+            } else {
+                update(2 * node + 1, mid + 1, right, index, value);
+            }
+            
+            tree[node] = min(tree[2 * node], tree[2 * node + 1]);
+        }
+    }
+
+    int query(int node, int left, int right, int l, int r) {
+        if (r < left || l > right) {
+            return INF + 1;
         }
         
-        tree[node] = min(tree[2 * node], tree[2 * node + 1]);
+        if (l <= left && r >= right) {
+            return tree[node];
+        }
+        
+        int mid = (left + right) / 2;
+        int res1 = query(2 * node, left, mid, l, r);
+        int res2 = query(2 * node + 1, mid + 1, right, l, r);
+        
+        return min(res1, res2);
     }
-}
-
-int query(int node, int left, int right, int l, int r) {
-    if (r < left || l > right) {
-        return MAXN + 1;
-    }
-    
-    if (l <= left && r >= right) {
-        return tree[node];
-    }
-    
-    int mid = (left + right) / 2;
-    int res1 = query(2 * node, left, mid, l, r);
-    int res2 = query(2 * node + 1, mid + 1, right, l, r);
-    
-    return min(res1, res2);
-}
+};
