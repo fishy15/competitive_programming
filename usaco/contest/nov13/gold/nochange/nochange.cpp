@@ -78,7 +78,7 @@ int main() {
         }
     }
 
-    ll ans = 0;
+    ll ans = -1;
     for (ll i = 0; i < (1 << k); i++) {
         //cout << dp[i] << '\n';
         if (dp[i] == n) {
@@ -93,11 +93,7 @@ int main() {
         }
     }
 
-    if (ans == 0) {
-        fout << -1 << '\n';
-    } else {
-        fout << ans << '\n';
-    }
+    fout << ans << '\n';
 
     return 0;
 }
