@@ -73,24 +73,33 @@
 using namespace std;
 
 int n;
-int arr[MAXN][3];
-int dp[MAXN][3];
+int a[MAXN];
+int b[MAXN];
+int c[MAXN];
+
+int dp_a[MAXN];
+int dp_b[MAXN];
+int dp_c[MAXN];
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
 
     cin >> n;
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < 3; j++) {
-            cin >> arr[i][j];
-        }
+        cin >> a[i] >> b[i] >> c[i];
     }
 
-    dp[0][0] = arr[0][0];
-    dp[0][1] = arr[0][1];
-    dp[0][2] = arr[0][2];
+    dp_a[0] = a[0];
+    dp_b[0] = b[0];
+    dp_c[0] = c[0];
 
+    for (int i = 1; i < n; i++) {
+        dp_a[i] = max(dp_b[i - 1], dp_c[i - 1]) + a[i];
+        dp_b[i] = max(dp_a[i - 1], dp_c[i - 1]) + b[i];
+        dp_c[i] = max(dp_a[i - 1], dp_b[i - 1]) + c[i];
+    }
 
+    cout << max(dp_a[n - 1], max(dp_b[n - 1], dp_c[n - 1])) << '\n';
 
     return 0;
 }
