@@ -11,7 +11,6 @@
 #include <queue>
 #include <set>
 #include <cmath>
-#include <cstring>
 
 #define ll long long
 #define eps 1e-8
@@ -21,41 +20,36 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 100
+#define MAXN 1000000
 
 using namespace std;
 
-int v[MAXN];
-int w[MAXN];
+int n, w;
 ll dp[100001];
+
+vector<array<int, 2>> vals;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
 
-    int n, w_max; cin >> n >> w_max;
-
-    memset(dp, 0x3f, 800008);
+    cin >> n >> w;
+    vals = vector<array<int, 2>>(n);
 
     for (int i = 0; i < n; i++) {
-        cin >> w[i] >> v[i];
+        cin >> vals[i][0] >> vals[i][1];
     }
 
-    dp[0] = 0;
-
     for (int i = 0; i < n; i++) {
-        for (int j = w[i]; j <= w_max; j++) {
-            if (dp[j - w[i]] < INFLL) {
-                dp[j] = max(dp[j], dp[j - w[i]] + v[i]);
-            }
+        for (int j = w; j >= vals[i][0]; j--) {
+            dp[j] = max(dp[j], dp[j - vals[i][0]] + vals[i][1]);
         }
     }
 
-    for (int i = 1; i <= w_max; i++) {
-        if (dp[i] == INFLL) dp[i] = 0;
+    for (int i = 1; i <= w; i++) {
         dp[i] = max(dp[i], dp[i - 1]);
     }
 
-    cout << dp[w_max] << '\n';
+    cout << dp[w] << '\n';
 
     return 0;
 }
