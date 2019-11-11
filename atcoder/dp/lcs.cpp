@@ -72,20 +72,24 @@ int main() {
             ans += s[curX - 1];
         }
 
-        cout << "\t" << curX << ' ' << curY << '\n';
-        cout << "\t[" << dp[curX][curY][0] << ' ' << dp[curX][curY][1] << ' ' << dp[curX][curY][2] << ' ' << dp[curX][curY][3] << "] \n";
-        curX = dp[curX][curY][1];
-        curY = dp[curX][curY][2];
-        cout << curX << ' ' << curY << '\n';
-        cout << "[" << dp[curX][curY][0] << ' ' << dp[curX][curY][1] << ' ' << dp[curX][curY][2] << ' ' << dp[curX][curY][3] << "] ";
+        //cout << "\t" << curX << ' ' << curY << '\n';
+        //cout << "\t[" << dp[curX][curY][0] << ' ' << dp[curX][curY][1] << ' ' << dp[curX][curY][2] << ' ' << dp[curX][curY][3] << "] \n";
+        int nextX, nextY;
+        nextX = dp[curX][curY][1];
+        nextY = dp[curX][curY][2];
+        curX = nextX;
+        curY = nextY;
+
+        //cout << curX << ' ' << curY << '\n';
+        //cout << "[" << dp[curX][curY][0] << ' ' << dp[curX][curY][1] << ' ' << dp[curX][curY][2] << ' ' << dp[curX][curY][3] << "] ";
     }
 
-    for (int i = 0; i <= 4; i++) {
-        for (int j = 0; j <= 4; j++) {
-            cout << "[" << dp[j][i][0] << ' ' << dp[j][i][1] << ' ' << dp[j][i][2] << ' ' << dp[j][i][3] << "] ";
-        }
-        cout << '\n';
-    }
+    /* for (int i = 0; i <= 4; i++) { */
+    /*     for (int j = 0; j <= 4; j++) { */
+    /*         cout << "[" << dp[j][i][0] << ' ' << dp[j][i][1] << ' ' << dp[j][i][2] << ' ' << dp[j][i][3] << "] "; */
+    /*     } */
+    /*     cout << '\n'; */
+    /* } */
 
     for (int i = (int)(ans.size()) - 1; i >= 0; i--) {
         cout << ans[i];
