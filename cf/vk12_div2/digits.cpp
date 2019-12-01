@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -27,6 +26,21 @@ using namespace std;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    string s1, s2; cin >> s1 >> s2;
+    sort(s2.rbegin(), s2.rend());
+
+    int pos = 0;
+    for (int i = 0; i < s1.size(); i++) {
+        if (s1[i] < s2[pos]) {
+            s1[i] = s2[pos];
+            pos++;
+        }
+
+        if (pos == s2.size()) break;
+    }
+
+    cout << s1 << '\n';
 
     return 0;
 }

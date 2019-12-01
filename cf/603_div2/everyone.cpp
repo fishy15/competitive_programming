@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -27,6 +26,27 @@ using namespace std;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    int t; cin >> t;
+    while (t--) {
+        int n; cin >> n;
+        set<int> ans;
+        int smth = (int)(sqrt(n));
+        for (int i = 0; i <= smth; i++) {
+            ans.insert(i);
+        }
+        int pos = 1;
+        while (n / pos != smth) {
+            ans.insert(n / pos);
+            pos++;
+        }
+
+        cout << ans.size() << '\n';
+        for (int i : ans) {
+            cout << i << ' ';
+        }
+        cout << '\n';
+    }
 
     return 0;
 }

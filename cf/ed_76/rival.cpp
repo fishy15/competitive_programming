@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -25,8 +24,19 @@
 
 using namespace std;
 
+void solve() {
+    int n, x, a, b; cin >> n >> x >> a >> b;
+    int diff = abs(a - b);
+    cout << min(n - 1, diff + x) << '\n';
+}
+
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    int q; cin >> q;
+    while (q--) {
+        solve();
+    }
 
     return 0;
 }

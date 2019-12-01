@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -27,6 +26,18 @@ using namespace std;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    int n, a, b; cin >> n >> a >> b;
+    vector<int> nums;
+
+    for (int i = 0; i < n; i++) {
+        int x; cin >> x;
+        nums.push_back(x);
+    }
+
+    sort(nums.begin(), nums.end());
+
+    cout << nums[b] - nums[b - 1] << '\n';
 
     return 0;
 }

@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -21,9 +20,12 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 1000000
+#define MAXN 100000
 
 using namespace std;
+
+int n, m; 
+int dp[MAXN + 1];
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);

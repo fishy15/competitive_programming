@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -25,8 +24,26 @@
 
 using namespace std;
 
+void solve() {
+    int n; cin >> n;
+    int min_r = INF;
+    int max_l = 0;
+    for (int i = 0; i < n; i++) {
+        int l, r; cin >> l >> r;
+        min_r = min(min_r, r);
+        max_l = max(max_l, l);
+    }
+
+    cout << max(max_l - min_r, 0) << '\n';
+}
+
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    int t; cin >> t;
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }

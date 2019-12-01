@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -24,6 +23,9 @@
 #define MAXN 1000000
 
 using namespace std;
+
+// check if a solution exists
+// if it does then do range prefix sums thing
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);

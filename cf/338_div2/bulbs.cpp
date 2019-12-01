@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -27,6 +26,23 @@ using namespace std;
 
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    int n, m; cin >> n >> m;
+
+    set<int> tot;
+    for (int i = 0; i < n; i++) {
+        int x; cin >> x;
+        for (int j = 0; j < x; j++) {
+            int y; cin >> y;
+            tot.insert(y);
+        }
+    }
+
+    if (tot.size() == m) {
+        cout << "YES\n";
+    } else {
+        cout << "NO\n";
+    }
 
     return 0;
 }

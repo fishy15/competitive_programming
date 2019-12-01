@@ -2,7 +2,6 @@
 // :pray: :bakekaga:
 
 #include <iostream>
-#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -25,8 +24,22 @@
 
 using namespace std;
 
+void solve() {
+    int n, k; cin >> n >> k;
+    string s; cin >> s;
+    string ans;
+    for (int i = 0; i < n; i++) {
+
+    }
+}
+
 int main() {
     cin.tie(0); ios::sync_with_stdio(0);
+
+    int t; cin >> t;
+    while (t--) {
+        solve();
+    }
 
     return 0;
 }
