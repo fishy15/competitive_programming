@@ -65,38 +65,34 @@ int main() {
         }
     }
 
-    int qqqq = 0;
-    while (order[qqqq] != n) qqqq++;
-    dp[qqqq] = 1;
-    for (int i : radj[5]) cout << i << ' '; cout << '\n';
-    for (int k = qqqq + 1; k < n; k++)  {
-        int i = order[k];
-        for (int j : adj[i]) {
-            if (dp[j] + 1 > dp[i] && dp[j]) {
-                p[i] = j;
-                dp[i] = dp[j] + 1;
-            }
+    for (int i = 1; i <= n; i++) {
+        if (i == n) {
+            dp[i] = 1;
+        } else {
+            dp[i] = -1;
         }
-
-        cout << i << ' ' << dp[i] << ' ' << p[i] << '\n';
     }
 
-    if (dp[1] == 0) {
+    for (int i : order) {
+        for (int j : adj[i]) {
+            if (dp[j] != -1 && dp[j] + 1 > dp[i]) {
+                dp[i] = dp[j] + 1;
+                p[i] = j;
+            }
+        }
+    }
+
+    if (dp[1] == -1) {
         cout << "IMPOSSIBLE\n";
         return 0;
     }
 
-    vector<int> ans_pos;
+    cout << dp[1] << '\n';
     int pos = 1;
     while (pos != 0) {
-        ans_pos.push_back(pos);
+        cout << pos << ' ';
         pos = p[pos];
     }
-
-    cout << dp[1] << '\n';
-    for (int i = dp[1] - 1; i >= 0; i--) {
-        cout << ans_pos[i] << ' ';
-    } cout << '\n';
 
     return 0;
 }
