@@ -1,6 +1,3 @@
-// :pray: :steph:
-// :pray: :bakekaga:
-
 #include <iostream>
 #include <iomanip>
 #include <fstream>
