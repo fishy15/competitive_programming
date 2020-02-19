@@ -9,9 +9,7 @@ vector<vector<ll>> matrix_mult(vector<vector<ll>> m1, vector<vector<ll>> m2) {
                 sum += m1[i][a] * m2[a][j];
 
                 // include if mod is necessary
-                if (sum > MOD) {
-                    sum -= MOD;
-                }
+                sum %= MOD;
             }
             
             row.push_back(sum);
