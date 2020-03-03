@@ -1,6 +1,3 @@
-// :pray: :steph:
-// :pray: :bakekaga:
-
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -21,68 +18,65 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 1000000
+#define MAXN 305
 
 using namespace std;
 
-int n, m; 
-vector<array<int, 3>> cows;
-int dp[1 << 20];
+ll n, m;
+
+// max answer between l to r
+ll dp[MAXN][MAXN];
+// max_eat[x][l][r] is max that eats x between l and r
+ll max_eat[MAXN][MAXN][MAXN];
+
+vector<array<ll, 3>> cows;
 
 int main() {
     ifstream fin("pieaters.in");
     ofstream fout("pieaters.out");
 
     fin >> n >> m;
-
-    for (int i = 0; i < m; i++) {
-        int a, b, c; fin >> a >> b >> c;
-        cows.push_back({a, b, c});
+    for (ll i = 0; i < m; i++) {
+        ll w, a, b; fin >> w >> a >> b;
+        a--; b--;
+        cows.push_back({w, a, b});
+        for (ll i = a; i <= b; i++) {
+            max_eat[i][a][b] = max(max_eat[i][a][b], w);
+        }
     }
 
-    vector<int> pos(60);
-    for (int i = 1; i < (1 << m); i++) {
-        for (int j = 0; j < m; j++) {
-            if (i & (1 << j)) {
-                if (i == (1 << j)) {
-                    dp[i] = cows[j][0];
-                } else if (dp[i - (1 << j)] && dp[i - (1 << j)] + cows[j][0] > dp[i]) {
-                    for (int &k : pos) k = 0;
-                    for (int k = 0; k < m; k++) {
-                        if (i & (1 << k) && j != k) {
-                            pos[cows[k][1]]++;
-                            pos[cows[k][2] + 1]--;
-                        }
-                    }
+    for (ll sz = 1; sz < n; sz++) {
+        for (ll a = 0; a < n; a++) {
+            ll b = a + sz;
+            if (b >= n) break;
 
-                    int cur = 0;
-                    bool check = false;
-                    bool works = false;
+            for (ll i = a; i <= b; i++) {
+                max_eat[i][a][b] = max(max_eat[i][a][b], max_eat[i][a][b - 1]);
+            }
 
-                    for (int k = 1; k <= 50; k++) {
-                        cur += pos[k];
-                        if (k == cows[j][1]) check = true;
-                        if (k == cows[j][2] + 1) break;
-                        if (check && cur == 0) {
-                            works = true;
-                            break;
-                        }
-                    }
-
-                    if (works) {
-                        dp[i] = dp[i - (1 << j)] + cows[j][0];
-                    }
-                }
+            for (ll i = a; i <= b; i++) {
+                max_eat[i][a][b] = max(max_eat[i][a][b], max_eat[i][a + 1][b]);
             }
         }
     }
 
-    int ans = 0;
-    for (int i = 0; i < (1 << 20); i++) {
-        ans = max(ans, dp[i]);
+    for (ll sz = 0; sz < n; sz++) {
+        for (ll a = 0; a < n; a++) {
+            ll b = a + sz;
+            if (b >= n) break;
+
+            for (ll i = a; i <= b; i++) {
+                dp[a][b] = max(dp[a][b], dp[a][i] + dp[i + 1][b]);
+            }
+
+            for (ll i = a; i <= b; i++) {
+                dp[a][b] = max(dp[a][b], dp[a][i - 1] + max_eat[i][a][b] + dp[i + 1][b]);
+            }
+        }
     }
 
-    fout << ans << '\n';
+    fout << dp[0][n - 1] << '\n';
+    cout << dp[0][n - 1] << '\n';
 
     return 0;
 }
