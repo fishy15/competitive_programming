@@ -48,7 +48,7 @@ int dfs(int v, int p, int k) {
     for (int e : adj[v]) {
         if (e != p) {
             int x = dfs(e, v, k);
-            if (x == -1) {cout << v << ' ' << k << " -1\n";return -1;}
+            if (x == -1) return -1;
             odd.push_back(x + 1);
             even.push_back(x + 1);
         }
