@@ -18,26 +18,78 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 100000
+#define MAXN 1000000
 
 using namespace std;
 
 int n;
-int qq;
 vector<int> adj[MAXN + 1];
-vector<int> len;
 
-int dfs(int v, int p) {
-    int ans = 0;
+bool ok(const vector<int> &v, int skip, int k) {
+    int l = 0;
+    int r = (int)(v.size()) - 1;
+    if (l == skip) l++;
+    if (r == skip) r--;
+    while (l <= r) {
+        int val = v[l] + v[r];
+        if (l == r) val = v[l];
+        if (val < k) return false;
+        l++;
+        r--;
+        if (l == skip) l++;
+        if (r == skip) r--;
+    }
+    return true;
+}
+
+int dfs(int v, int p, int k) {
+    vector<int> odd;
+    vector<int> even = {0};
     for (int e : adj[v]) {
-        if (v == qq) {
-            len.push_back(dfs(e, v) + 1);
-        } else if (e != p) {
-            ans += dfs(e, v) + 1;
+        if (e != p) {
+            int x = dfs(e, v, k);
+            if (x == -1) {cout << v << ' ' << k << " -1\n";return -1;}
+            odd.push_back(x + 1);
+            even.push_back(x + 1);
         }
     }
 
-    return ans;
+    sort(odd.begin(), odd.end());
+    sort(even.begin(), even.end());
+
+    if (odd.size() % 2 == 0) {
+        swap(odd, even);
+    }
+
+    int l = 0;
+    int r = odd.size() - 1;
+    int a = -1;
+
+    // no skip
+    if (ok(even, -1, k)) {
+        a = 0;
+    }
+
+    if (v == 1) return a;
+
+    while (l <= r) {
+        int m = l + (r - l) / 2;
+        bool res = ok(odd, m, k);
+        if (res) {
+            a = odd[m];
+            l = m + 1;
+        } else {
+            r = m - 1;
+        }
+    }
+    
+    // cout << v << ' ' << k << ' ' << a << '\n';
+    return a;
+}
+
+bool check(int k) {
+    bool res = dfs(1, 1, k);
+    return res == 0;
 }
 
 int main() {
@@ -51,37 +103,22 @@ int main() {
         adj[b].push_back(a);
     }
 
-    int q = INF;
-    for (int i = 1; i <= n; i++) {
-        if (adj[i].size() > 2) {
-            qq = i;
-            q = min(q, qq);
-        }
-    }
+    int l = 1;
+    int r = n;
+    int ans = -1;
 
-    dfs(qq, 0);
-
-    if (q == qq) {
-        sort(len.begin(), len.end());
-    } 
-
-    int a1 = INF;
-
-    for (int i = 0; i < len.size(); i++) {
-        // cout << len[i] << ' ' ;
-        if (i + i + 1 != len.size()) {
-            a1 = min(a1, len[i] + len[len.size() - i - 1]);
+    while (l <= r) {
+        int m = l + (r - l) / 2;
+        bool res = check(m);
+        if (res) {
+            ans = m;
+            l = m + 1;
         } else {
-            a1 = min(a1, len[i]);
+            r = m - 1;
         }
     }
 
-    int a2 = len[len.size() - 1];
+    fout << ans << '\n';
 
-    for (int i = 0; i < len.size() - 1; i++) {
-        a2 = min(a2, len[i] + len[len.size() - i - 2]);
-    }
-
-    fout << max(a1, a2) << '\n';
     return 0;
 }
