@@ -81,7 +81,7 @@ int main() {
         grid.push_back(s);
     }
 
-    dp[0][0] = 1;
+    dp[0][0] = grid[0][0] == '.';
     
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
