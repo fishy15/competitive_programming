@@ -10,7 +10,7 @@
 #include <set>
 #include <cmath>
 
-#define ll long long
+#define ll __int128 
 #define eps 1e-8
 #define MOD 1000000007
 
