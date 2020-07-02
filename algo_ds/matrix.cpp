@@ -14,7 +14,8 @@ struct M {
         }
         return res;
     }
-    static M pow(M &m, int e) {
+    ll* operator[](const int &x) { return m[x]; }
+    static M pow(M &m, ll e) {
         M res = I();
         while (e) {
             if (e & 1) res = res * m;
