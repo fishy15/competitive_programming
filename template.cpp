@@ -9,8 +9,11 @@
 #include <queue>
 #include <set>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 
 #define ll long long
+#define ld long double
 #define eps 1e-8
 #define MOD 1000000007
 
