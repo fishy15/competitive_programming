@@ -44,8 +44,8 @@ ll get(int i, int j) {
     }
 
     // split with one in middle
+    int m2 = j;
     for (int m = i; m < j; m++) {
-        int m2 = j;
         while (g(i, m) > g(m2, j) && m + 1 < m2) m2--;
         if (g(i, m) == g(m2, j)) {
             ll res1 = get(i, m);
