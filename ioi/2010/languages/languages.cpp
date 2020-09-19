@@ -53,7 +53,7 @@ struct val {
         for (auto p : f) {
             ld actual_f = 1.0 * freq[p.first] / tot;
             ld given_f = 1.0 * p.second / LEN;
-            ll val = fabs(actual_f - given_f) * 100;
+            ld val = fabs(actual_f - given_f) * 100;
             ans += val * val;
         }
         return ans;
