@@ -1,3 +1,11 @@
+/*
+ * We can do centroid decomposition on the final tree and store, at each node, its centroid ancestors 
+ * + the distance to ancestor + which subtree it belongs to. When we build a node, we mark that it is 
+ * turned on and update the max distance for each centroid ancestor. When we query a node, we check 
+ * through the ancestors to see the best possible path. For each node, we store the two longest paths 
+ * within its component that are in different subtrees.
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -9,8 +17,11 @@
 #include <queue>
 #include <set>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 
 #define ll long long
+#define ld long double
 #define eps 1e-8
 #define MOD 1000000007
 
@@ -18,188 +29,98 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 100000
+#define MAXN 100010
 
 using namespace std;
 
-int n;
-int q;
-vector<array<int, 2>> queries;
+int n, q;
+pair<char, int> qq[MAXN];
 
-vector<int> adj[MAXN + 1];
+vector<int> adj[MAXN];
+vector<array<int, 3>> par[MAXN];
+array<int, 2> best[MAXN][2];
+int sz[MAXN];
+bool vis[MAXN];
+bool on[MAXN];
 
-// centroid decomp
-int dist[MAXN + 1];
-bool done[MAXN + 1];
-int up[MAXN + 1][18];
-vector<int> child[MAXN + 1];
-int root;
-
-// ancestor
-int t;
-int up2[MAXN + 1][18];
-int in[MAXN + 1];
-int out[MAXN + 1];
-
-// lca on original
-int t2;
-int in2[MAXN + 1];
-int out2[MAXN + 1];
-int dist2[MAXN + 1];
-
-// current status
-bool added[MAXN + 1];
-int max_dist[MAXN + 1];
-
-int dfs(int v, int p) {
-    dist[v] = 1;
-
+int dfs_sz(int v, int p) {
+    sz[v] = 1;
     for (int e : adj[v]) {
-        if (e != p && !done[e]) {
-            dist[v] += dfs(e, v);
+        if (e != p && !vis[e]) {
+            sz[v] += dfs_sz(e, v);
         }
     }
-
-    return dist[v];
+    return sz[v];
 }
 
-int dfs2(int v, int p, int sz) {
-    int mm = 0;
+int dfs_root(int v, int p, int n) {
     for (int e : adj[v]) {
-        if (e != p && !done[e]) {
-            if (2 * dist[e] >= sz) {
-                return dfs2(e, v, sz);
-            }
+        if (e != p && !vis[e] && 2 * sz[e] > n) {
+            return dfs_root(e, v, n);
         }
     }
-
     return v;
 }
 
-int decomp(int v) {
-    // cout << v << '\n';
-    dfs(v, -1);
-    int c = dfs2(v, -1, dist[v]);
-    // cout << "\t" << c << '\n';
-    done[c] = true;
+void dfs_anc(int v, int p, int c, int st, int d) {
+    par[v].push_back({c, d, st});
+    for (int e : adj[v]) {
+        if (e != p && !vis[e]) {
+            dfs_anc(e, v, c, st, d + 1);
+        }
+    }
+}
+
+void centroid(int v, int p) {
+    dfs_sz(v, -1);
+    int c = dfs_root(v, -1, sz[v]);
+    vis[c] = true;
 
     for (int e : adj[c]) {
-        if (!done[e]) {
-            // cout << "\t\t" << e << '\n';
-            int u = decomp(e);
-            child[c].push_back(u);
-            up[u][0] = c;
+        if (!vis[e]) {
+            dfs_anc(e, c, c, e, 1);
         }
     }
 
-    return c;
-}
-
-void dfs3(int v) {
-    in[v] = t++;
-
-    for (int l = 1; l < 18; l++) {
-        if (up[v][l - 1] != -1) {
-            up[v][l] = up[up[v][l - 1]][l - 1];
-        } else {
-            up[v][l] = -1;
+    for (int e : adj[c]) {
+        if (!vis[e]) {
+            centroid(e, c);
         }
     }
-
-    for (int e : child[v]) {
-        dfs3(e);
-    }
-
-    out[v] = t++;
 }
 
-void dfs4(int v, int p) {
-    in2[v] = t2++;
-
-    dist2[v] = dist2[p] + 1;
-
-    up2[v][0] = p;
-    for (int l = 1; l < 18; l++) {
-        if (up2[v][l - 1] != -1) {
-            up2[v][l] = up2[up2[v][l - 1]][l - 1];
-        } else {
-            up2[v][l] = -1;
+void activate(int v) {
+    on[v] = true;
+    for (auto arr : par[v]) {
+        int c = arr[0];
+        int d = arr[1];
+        int st = arr[2];
+        if (d > best[c][0][0]) {
+            auto old = best[c][0];
+            best[c][0] = {d, st};
+            if (st != old[1]) {
+                best[c][1] = old;
+            }
+        } else if (d > best[c][1][0] && st != best[c][0][1]) {
+            best[c][1] = {d, st};
         }
     }
-
-    for (int e : adj[v]) {
-        if (e != p) {
-            dfs4(e, v);
-        }
-    }
-
-    out2[v] = t2++;
 }
 
-bool anc(int p, int c) {
-    return in[p] <= in[c] && out[c] <= out[p];
-}
-
-bool anc2(int p, int c) {
-    return in2[p] <= in2[c] && out2[c] <= out2[p];
-}
-
-int lca(int a, int b) {
-    if (anc2(a, b)) {
-        return a; 
-    }
-
-    if (anc2(b, a)) {
-        return b;
-    }
-
-    for (int l = 17; l >= 0; l--) {
-        if (!anc2(up2[b][l], a)) {
-            b = up2[b][l];
-        }
-    }
-
-    return up2[b][0];
-}
-
-int dist_orig(int u, int v) {
-    int l = lca(u, v);
-    return dist2[u] + dist2[v] - 2 * dist2[l];
-}
-
-void add(int v) {
-    added[v] = true;
-
-    int cur = v;
-    while (cur != -1) {
-        // cout << cur << ' ' << v << '\n';
-        max_dist[cur] = max(max_dist[cur], dist_orig(cur, v));
-        cur = up[cur][0];
-    }
-}
-
-int query(int v) {
-    int ans = 0;
-    int cur = v;
-
-    while (cur != -1) {
-        // cout << cur << '\n';
-        if (added[cur]) {
-            for (int e : child[cur]) {
-                // cout << "m" << dist_orig(v, cur);
-                if (!anc(e, v)) {
-                    int d = dist_orig(v, cur);
-                    if (max_dist[e]) {
-                        d += max_dist[e] + 1;
-                    }
-                    ans = max(ans, d);
-                }
+int qry(int v) {
+    int ans = best[v][0][0];
+    for (auto arr : par[v]) {
+        int c = arr[0];
+        int d = arr[1];
+        int st = arr[2];
+        if (on[c]) {
+            if (st == best[c][0][1]) {
+                ans = max(ans, d + best[c][1][0]);
+            } else {
+                ans = max(ans, d + best[c][0][0]);
             }
         }
-
-        cur = up[cur][0];
     }
-
     return ans;
 }
 
@@ -208,43 +129,38 @@ int main() {
     ofstream fout("newbarn.out");
 
     fin >> q;
+    int cur = 0;
     for (int i = 0; i < q; i++) {
-        char a; int b; fin >> a >> b;
-        if (a == 'B') {
-            queries.push_back({'B' - 'A', ++n});
-            if (b != -1) {
-                adj[b].push_back(n);
-                adj[n].push_back(b);
+        fin >> qq[i].first >> qq[i].second;
+        if (qq[i].second != -1) {
+            qq[i].second--;
+        }
+        if (qq[i].first == 'B') {
+            if (qq[i].second >= 0) {
+                adj[cur].push_back(qq[i].second);
+                adj[qq[i].second].push_back(cur);
             }
-        } else {
-            queries.push_back({a, b});
+            cur++;
         }
     }
 
-    root = decomp(1);
-    up[root][0] = -1;
-    dfs3(root);
-    dfs4(1, 1);
-    
-   // cout << root << '\n';
+    n = cur + 1;
 
-    /*
-    for (int i = 1; i <= 4; i++) {
-        for (int l = 0; l < 4; l++) {
-            cout << up[i][l] << ' ';
-        } cout << '\n';
+    for (int i = 0; i < n; i++) {
+        if (!vis[i]) {
+            centroid(i, -1);
+        }
+        best[i][0][1] = -1;
+        best[i][1][1] = -1;
     }
-    */
 
-    for (auto& qq : queries) {
-        if (qq[0] == 'B' - 'A') {
-            // cout << "AA";
-            add(qq[1]);
+    cur = 0;
+    for (int i = 0; i < q; i++) {
+        if (qq[i].first == 'B') {
+            activate(cur);
+            cur++;
         } else {
-            for (int i = 1; i <= n; i++) {
-                cout << max_dist[i] << ' ';
-            } cout << '\n';
-            // fout << query(qq[1]) << '\n';
+            fout << qry(qq[i].second) << '\n';
         }
     }
 
