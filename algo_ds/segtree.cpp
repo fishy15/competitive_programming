@@ -1,76 +1,77 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <algorithm>
-#include <utility>
-#include <map>
-#include <queue>
-#include <set>
-#include <cmath>
-
-#define ll long long
-#define eps 1e-8
-#define MOD 1000000007
-
-#define INF 0x3f3f3f3f
-#define INFLL 0x3f3f3f3f3f3f3f3f
-
-// change if necessary
-#define MAXN 100000
-
-using namespace std;
-
-int n;
-int a[MAXN];
-int t[4 * MAXN + 1];
-
-int build(int v, int l, int r) {
-    if (l == r) {
-        return t[v] = a[l];
-    }
-
-    int min_l = build(2 * v, l, l + (r - l) / 2);
-    int min_r = build(2 * v + 1, r - (r - 1) / 2, r);
-
-    return t[v] = min(min_l, min_r);
-}
-
-void update(int v, int n, int d, int l, int r) {
-    if (l == r) {
-        a[n] += d;
-        t[v] += d;
-    } else {
-        if (l <= n && n <= l + (r - l) / 2) {
-            update(2 * v, n, d, l, l + (r - l) / 2);
+// segtree (point add update, range min query)
+struct segtree {
+    int st[4 * MAXN];
+    void build(int v, int l, int r) {
+        if (l == r) {
+            st[v] = nums[l];
         } else {
-            update(2 * v + 1, n, d, r - (r - 1) / 2, r);
+            int m = (l + r) / 2;
+            build(2 * v, l, m);
+            build(2 * v + 1, m + 1, r);
+            st[v] = max(st[2 * v], st[2 * v + 1]);
         }
-
-        t[v] = min(t[2 * v], t[2 * v + 1]);
     }
-}
-
-int query(int v, int x, int y, int l, int r) {
-    if (l <= x && y <= r) {
-        return t[v];
+    void upd(int x, int y, int v = 1, int l = 0. int r = n - 1) {
+        if (l == r) {
+            st[v] = y;
+        } else {
+            int m = (l + r) / 2;
+            if (m <= x) {
+                upd(x, y, 2 * v, l, m);
+            } else {
+                upd(x, y, 2 * v + 1, m + 1, r);
+            }
+            st[v] = max(st[2 * v], st[2 * v + 1]);
+        }
     }
-
-    if (r < x || l > y) {
-        return INF;
+    int qry(int x, int y, int v = 1, int l = 0, int r = n - 1) {
+        if (r < x || l > y) return 0;
+        if (x <= l && r <= y) return st[v];
+        int m = (l + r) / 2;
+        return max(qry(x, y, 2 * v, l, m), qry(x, y, 2 * v + 1, m + 1, r));
     }
+};
 
-    int left = query(2 * v, x, y, l, l + (r - l) / 2);
-    int right = query(2 * v + 1, x, y, r - (r - l) / 2, r);
-    return min(left, right);
-}
-
-int main() {
-    cin.tie(0); ios::sync_with_stdio(0);
-
-    cin >> n;
-    for (int i = 0; i < n; i++) {
-        cin >> a[i];
+// lazy segtree (range add update, range min query)
+struct lazy_segtree {
+    int st[4 * MAXN];
+    int lazy[4 * MAXN];
+    void build(int v, int l, int r) {
+        if (l == r) {
+            st[v] = nums[l];
+        } else {
+            int m = (l + r) / 2;
+            build(2 * v, l, m);
+            build(2 * v + 1, m + 1, r);
+            st[v] = max(st[2 * v], st[2 * v + 1]);
+        }
     }
-
-    return 0;
-}
+    void push(int v, int l, int r) {
+        if (l != r) {
+            lazy[2 * v] += lazy[v];
+            lazy[2 * v + 1] += lazy[v];
+        }
+        st[v] += lazy[v];
+        lazy[v] = 0;
+    }
+    void upd(int x, int y, int q, int v = 1, int l = 0, int r = m - 1) {
+        push(v, l, r);
+        if (r < x || l > y) return;
+        if (x <= l && r <= y) {
+            lazy[v] += q;
+            push(v, l, r);
+        } else {
+            int m = (l + r) / 2;
+            upd(x, y, q, 2 * v, l, m);
+            upd(x, y, q, 2 * v + 1, m + 1, r);
+            st[v] = max(st[2 * v], st[2 * v + 1]);
+        }
+    }
+    int qry(int x, int y, int v = 1, int l = 0, int r = m - 1) {
+        push(v, l, r);
+        if (r < x || l > y) return 0;
+        if (x <= l && r <= y) return st[v];
+        int m = (l + r) / 2;
+        return max(qry(x, y, 2 * v, l, m), qry(x, y, 2 * v + 1, m + 1, r));
+    }
+};
