@@ -1,3 +1,15 @@
+/*
+ * We can solve the problem using divide and conquer (similar idea to CDQ D&C). Suppose we are trying to 
+ * solve all the a query within [L, R] that is in both [L, M] and [M + 1, R]. We can use an O(NK) algorithm
+ * to calculate mat[i][x][y] for i in [L, M], which represents the number of nondecreasing subsequences with
+ * a lower bound of x, a higher bound of y, and all the elements are in [i, M]. We can also calculate 
+ * mat[i][x][y] for i in [M + 1, R], which represents the number of nondecreasing subsequences with
+ * a lower bound of x, a higher bound of y, and contained within [M + 1, i]. We just need to pick the 
+ * appropriate matrices and combine them to answer the query. For the queries that aren't in both halves,
+ * we can solve them in their respective halves. Overall, there are log N levels, so the total time 
+ * complexity is O(NK^2 log N + QK^2).
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -9,8 +21,11 @@
 #include <queue>
 #include <set>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 
 #define ll long long
+#define ld long double
 #define eps 1e-8
 #define MOD 1000000007
 
@@ -18,93 +33,143 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 5000
+#define MAXN 50010
+#define MAXQ 200010
 
 using namespace std;
 
-int n, k;
-int nums[MAXN];
-ll st[4 * MAXN][20][20];
-
-struct s {
-    ll arr[20][20];
+struct mi {
+    int v;
+    mi() : v(0) {};
+    mi(int k) : v(k % MOD) {};
+    mi operator+=(const mi &m2) {
+        v += m2.v;
+        if (v >= MOD) v -= MOD;
+        return *this;
+    }
+    mi operator-=(const mi &m2) {
+        v -= m2.v;
+        if (v < 0) v += MOD;
+        return *this;
+    }
+    mi operator*(const mi &m2) {
+        return mi((ll) v * m2.v % MOD);
+    }
 };
 
-void build(int v, int l, int r) {
-    if (l == r) {
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 20; j++) {
-                st[v][i][j] = 0;
-            }
+int n, k, q;
+vector<array<int, 3>> qry;
+int nums[MAXN];
+mi ans[MAXQ];
+mi combo[MAXN][22][22];
+
+void calc_before(int l, int r) {
+    for (int i = 0; i <= k + 1; i++) {
+        for (int j = 0; j <= k + 1; j++) {
+            combo[r][i][j] = 0;
         }
-        st[v][nums[l]][nums[l]] = 1;
-        return;
     }
 
-    int mid = l + (r - l) / 2;
-    build(2 * v, l, mid);
-    build(2 * v + 1, mid + 1, r);
+    combo[r][0][0] = 1;
+    combo[r][0][nums[r]] = 1;
+    combo[r][0][k + 1] = 1; // does not include empty
+    combo[r][nums[r]][nums[r]] = 1;
+    combo[r][nums[r]][k + 1] = 1;
+    combo[r][k + 1][k + 1] = 1;
 
-    for (int lo = 0; lo < k; lo++) {
-        for (int hi = lo; hi < k; hi++) {
-            for (int m = lo; m <= hi; m++) {
-                for (int m2 = m; m2 <= hi; m2++) {
-                    st[v][lo][hi] += st[2 * v][lo][m] * st[2 * v + 1][m2][hi];
-                    st[v][lo][hi] %= MOD;
-                }
+    for (int i = r - 1; i >= l; i--) {
+        for (int a = 0; a <= k + 1; a++) {
+            for (int b = 0; b <= k + 1; b++) {
+                combo[i][a][b] = combo[i + 1][a][b];
             }
-
-            st[v][lo][hi] += st[2 * v][lo][hi];
-            if (st[v][lo][hi] > MOD) st[v][lo][hi] -= MOD;
-            st[v][lo][hi] += st[2 * v + 1][lo][hi];
-            if (st[v][lo][hi] > MOD) st[v][lo][hi] -= MOD;
         }
+
+        // solve for combo[i][nums[i]][j]
+        for (int j = nums[i]; j <= k + 1; j++) {
+            for (int a = nums[i]; a <= j; a++) {
+                combo[i][nums[i]][j] += combo[i + 1][a][j];
+                combo[i][0][j] += combo[i + 1][a][j];
+            }
+        }
+
+        combo[i][nums[i]][nums[i]] += 1;
+        combo[i][0][nums[i]] += 1;
     }
 }
 
-s query(int v, int x, int y, int l, int r) {
-    s ans;
-    for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 20; j++) {
-            ans.arr[i][j] = 0;
+void calc_after(int l, int r) {
+    for (int i = 0; i <= k + 1; i++) {
+        for (int j = 0; j <= k + 1; j++) {
+            combo[l][i][j] = 0;
         }
     }
 
-    if (x <= l && r <= y) {
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 20; j++) {
-                ans.arr[i][j] = st[v][i][j];
+    combo[l][0][0] = 1;
+    combo[l][0][nums[l]] = 1;
+    combo[l][0][k + 1] = 1; // does not include empty
+    combo[l][nums[l]][nums[l]] = 1;
+    combo[l][nums[l]][k + 1] = 1;
+    combo[l][k + 1][k + 1] = 1;
+
+    for (int i = l + 1; i <= r; i++) {
+        for (int a = 0; a <= k + 1; a++) {
+            for (int b = 0; b <= k + 1; b++) {
+                combo[i][a][b] = combo[i - 1][a][b];
             }
         }
 
-        return ans;
+        for (int j = 0; j <= nums[i]; j++) {
+            for (int a = j; a <= nums[i]; a++) {
+                combo[i][j][nums[i]] += combo[i - 1][j][a];
+                combo[i][j][k + 1] += combo[i - 1][j][a];
+            }
+        }
+
+        combo[i][nums[i]][nums[i]] += 1;
+        combo[i][nums[i]][k + 1] += 1;
+    }
+}
+
+void solve(int l, int r, const vector<array<int, 3>> &cur) {
+    vector<array<int, 3>> before;
+    vector<array<int, 3>> after;
+
+    if (l == r) {
+        for (auto &arr : cur) {
+            ans[arr[2]] = 2;
+        }
+        return;
     }
 
-    if (r < x || l > y) {
-        return ans;
-    }
-
-    int mid = l + (r - l) / 2;
-    s left = query(2 * v, x, y, l, mid);
-    s right = query(2 * v + 1, x, y, mid + 1, r);
-
-    for (int lo = 0; lo < k; lo++) {
-        for (int hi = lo; hi < k; hi++) {
-            for (int m = lo; m <= hi; m++) {
-                for (int m2 = m; m2 <= hi; m2++) {
-                    ans.arr[lo][hi] += left.arr[lo][m] * right.arr[m2][hi];
-                    ans.arr[lo][hi] %= MOD;
+    int m = (l + r) / 2;
+    calc_before(l, m);
+    calc_after(m + 1, r);
+    for (auto arr : cur) {
+        if (arr[1] <= m) {
+            before.push_back(arr);
+        } else if (arr[0] > m) {
+            after.push_back(arr);
+        } else {
+            mi cur;
+            for (int i = 0; i <= k + 1; i++) {
+                if (1 <= i && i <= k) {
+                    cur += combo[arr[0]][0][i];
+                    ans[arr[2]] += cur * combo[arr[1]][i][k + 1];
+                } else {
+                    ans[arr[2]] += combo[arr[0]][0][i] * combo[arr[1]][i][k + 1];
                 }
             }
-
-            ans.arr[lo][hi] += left.arr[lo][hi];
-            if (ans.arr[lo][hi] > MOD) st[v][lo][hi] -= MOD;
-            ans.arr[lo][hi] += right.arr[lo][hi];
-            if (ans.arr[lo][hi] > MOD) st[v][lo][hi] -= MOD;
+            ans[arr[2]] += 1;
         }
     }
 
-    return ans;
+    if (!before.empty()) {
+        solve(l, m, before);
+    } 
+
+    if (!after.empty()) {
+        solve(m + 1, r, after);
+    }
 }
 
 int main() {
@@ -112,26 +177,21 @@ int main() {
     ofstream fout("nondec.out");
 
     fin >> n >> k;
-
     for (int i = 0; i < n; i++) {
         fin >> nums[i];
-        nums[i]--;
+    }
+    
+    fin >> q;
+    for (int i = 0; i < q; i++) {
+        int l, r; fin >> l >> r;
+        l--; r--;
+        qry.push_back({l, r, i});
     }
 
-    build(1, 0, n - 1);
+    solve(0, n - 1, qry);
 
-    int q; fin >> q;
     for (int i = 0; i < q; i++) {
-        ll ans = 0;
-        int l, r; fin >> l >> r;
-        s ss = query(1, l - 1, r - 1, 0, n - 1);
-        for (int lo = 0; lo < k; lo++) {
-            for (int hi = lo; hi < k; hi++) {
-                ans += ss.arr[lo][hi];
-                if (ans > MOD) ans -= MOD;
-            }
-        }
-        fout << ans + 1 << '\n';
+        fout << ans[i].v << '\n';
     }
 
     return 0;
