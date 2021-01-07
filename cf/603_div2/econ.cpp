@@ -1,7 +1,5 @@
-// :pray: :steph:
-// :pray: :bakekaga:
-
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -11,143 +9,115 @@
 #include <queue>
 #include <set>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 
 #define ll long long
+#define ld long double
 #define eps 1e-8
-#define MOD 1001001007
+#define MOD 1000000007
 
 #define INF 0x3f3f3f3f
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 1000001
+#define MAXN 1010
 
 using namespace std;
 
 int n;
 struct tree {
-    int sz;
-    int up[2001];
-    int in[2001];
-    int out[2001];
-    int lift[2001][12];
-    vector<int> connect[1001];
-    int below[2001];
-    int time = 0;
-    int dp[1001][1001];
+    int n;
+    vector<int> adj[2 * MAXN];
+    int conn[MAXN];
+    int par[2 * MAXN];
+    int deg[2 * MAXN];
+    int cur[2 * MAXN];
+    int all[MAXN][MAXN];
 
-    void dfs(int i, int par) {
-        in[i] = time;
-
-        lift[i][0] = par;
-        for (int j = 1; j <= 11; j++) {
-            lift[i][j] = lift[lift[i][j - 1]][j - 1];
-        }
-        
-        for (int j : connect[i]) {
-            time++;
-            dfs(j, i);
-        }
-        time++;
-        out[i] = time;
+    tree() {
+        memset(par, 0, sizeof par);
+        memset(deg, 0, sizeof deg);
+        memset(cur, 0, sizeof cur);
+        memset(all, 0, sizeof all);
     }
 
-    int dfs2(int i, int par) {
-        int ans = 0;
-
-        for (int j : connect[i]) {
-            ans += dfs2(j, i) + 1;
-        }
-
-        return below[i] = ans;
-    }
-
-    bool is_ancestor(int par, int child) {
-        return in[par] <= in[child] && out[par] >= out[child];
-    }
-
-    int lca(int a, int b) {
-        if (is_ancestor(a, b)) {
-            return a;
-        } 
-
-        if (is_ancestor(b, a)) {
-            return b;
-        }
-
-        for (int i = 11; i >= 0; i--) {
-            if (!is_ancestor(lift[a][i], b)) {
-                a = lift[a][i];
+    void dfs(int v, int p) {
+        par[v] = p;
+        for (int e : adj[v]) {
+            if (e != p) {
+                deg[v]++;
+                dfs(e, v);
             }
         }
-
-        return lift[a][0];
     }
 
-    void qqqq() {
-        for (int i = 0; i < n; i++) {
-            for (int j = i; j < n; j++) {
-                if (i == j) {
-                    dp[i][j] = up[i];
-                } else {
-                    dp[i][j] = lca(dp[i][j - 1], up[j]);
+    void calc_all() {
+        for (int i = 0; i < ::n; i++) {
+            memcpy(cur, deg, sizeof cur);
+            for (int j = i; j < ::n; j++) {
+                if (j - i) all[i][j] = all[i][j - 1];
+                int pos = conn[j];
+                while (pos && cur[pos] == 0) {
+                    all[i][j]++;
+                    cur[par[pos]]--; 
+                    pos = par[pos];
                 }
             }
         }
     }
 };
 
-int ans[1001];
+tree top, down;
+int dp[MAXN];
+
+int ckmax(int &a, int b) {
+    return a = max(a, b);
+}
 
 int main() {
-    //cin.tie(0); ios::sync_with_stdio(0);
+    cin.tie(0)->sync_with_stdio(0);
 
     cin >> n;
-    tree t1, t2;
-    cin >> t1.sz;
-    for (int i = 1; i < t1.sz; i++) {
-        int a; cin >> a;
-        t1.connect[a - 1].push_back(i);
+
+    cin >> top.n;
+    for (int i = 0; i < top.n - 1; i++) {
+        int x; cin >> x; x--;
+        top.adj[i + 1].push_back(x);
+        top.adj[x].push_back(i + 1);
     }
 
     for (int i = 0; i < n; i++) {
-        int a; cin >> a;
-        t1.up[i] = a - 1;
+        int x; cin >> x; x--;
+        top.conn[i] = x;
     }
 
-    cin >> t2.sz;
-    for (int i = 1; i < t2.sz; i++) {
-        int a; cin >> a;
-        t2.connect[a - 1].push_back(i);
-    }
-
-    for (int i = 0; i < n; i++) {
-        int a; cin >> a;
-        t2.up[i] = a - 1;
-    }
-
-    t1.dfs(0, 0);
-    t1.dfs2(0, 0);
-    t2.dfs(0, 0);
-    t2.dfs2(0, 0);
-    t1.qqqq();
-    t2.qqqq();
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cout << t1.below[t1.dp[i][j]] << ' ';
-        } cout << '\n';
+    cin >> down.n;
+    for (int i = 0; i < down.n - 1; i++) {
+        int x; cin >> x; x--;
+        down.adj[i + 1].push_back(x);
+        down.adj[x].push_back(i + 1);
     }
 
     for (int i = 0; i < n; i++) {
-        ans[i] = t1.below[t1.dp[0][i]];
-        for (int j = 0; j < i; j++) {
-            ans[i] = max(ans[i], ans[j] + t1.below[t1.dp[j + 1][i]]);
-            ans[i] = max(ans[i], ans[j] + t2.below[t2.dp[j + 1][i]]);
+        int x; cin >> x; x--;
+        down.conn[i] = x;
+    }
+
+    top.dfs(0, -1);
+    down.dfs(0, -1);
+    top.calc_all();
+    down.calc_all();
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            int v = max(top.all[j][i], down.all[j][i]);
+            if (j) v += dp[j - 1];
+            ckmax(dp[i], v);
         }
-        cout << ans[i] << '\n';
     }
+    
+    cout << dp[n - 1] << '\n';
 
-    cout << ans[n - 1] << '\n';
     return 0;
 }
