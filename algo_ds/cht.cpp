@@ -27,3 +27,18 @@ struct cht : multiset<line, less<>> {
         return (l.m * x + l.b) * (GET_MAX ? 1 : -1);
     }
 };
+
+// if before C++11
+// line struct: 
+struct line {
+    bool t;
+    mutable ll m, b, l;
+    line(ll m, ll b) : t(true), m(m), b(b), l(0) {}
+    line(ll x) : t(false), b(x) {}
+    bool operator<(const line& other) const { 
+        if (other.t) return m < other.m; 
+        return l < other.b;
+    }
+};
+// cht struct:
+struct cht : multiset<line, less<line>> {
