@@ -1,3 +1,11 @@
+/*
+ * The boundary between the two different colors must be a line that only goes down and right from the
+ * top left to the bottom right corner. For each edge in the grid, we can represent two arrays that count
+ * the number of paths that go along that edge so far and work our way down. Because using a . square to
+ * change from horizontal to vertical means that the color on that square will be fixed, so we multiply
+ * by 1/2. At the end, we multiply by 2^(# of . squares) to get the answer.
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -22,31 +30,48 @@
 
 using namespace std;
 
+struct mi {
+    int v;
+    mi() : mi(0) {}
+    mi(ll v) : v(v) {}
+    mi &operator+=(const mi &m2) {
+        v += m2.v;
+        if (v >= MOD) v -= MOD;
+        return *this;
+    }
+    mi operator+(const mi &m2) {
+        mi m(v);
+        return m += m2;
+    }
+    mi &operator*=(const mi &m2) {
+        v = (ll)v * m2.v % MOD;
+        return *this;
+    }
+    mi operator*(const mi &m2) {
+        mi m(v);
+        return m *= m2;
+    }
+    mi pow(int e) {
+        mi res = 1;
+        mi cur = *this;
+        while (e) {
+            if (e & 1) res *= cur;
+            cur *= cur;
+            e >>= 1;
+        }
+        return res;
+    }
+    mi inv() {
+        return this->pow(MOD - 2);
+    }
+};
+
 int n;
 string grid[MAXN];
-
-ll top[MAXN][MAXN];
-ll bottom[MAXN][MAXN];
-ll open[MAXN];
-
-ll modpow(ll n, ll e, ll m) {
-    if (e == 0) return 1LL;
-    if (e == 1) return n % m;
-    ll res = modpow(n, e / 2, m);
-    if (e % 2) {
-        return (res * res % m) * n % m;
-    }
-    return res * res % m;
-}
-
-ll calc(int l, int r) {
-    ll op = open[min(r, n - 1)];
-    if (l > 0) {
-        op -= open[max(0, l - 1)];
-    }
-    if (op <= 1) return 0;
-    return modpow(2, op - 2, MOD);
-}
+mi rsum[MAXN][MAXN];
+mi csum[MAXN][MAXN];
+mi inv2 = mi(2).inv();
+int cnt;
 
 int main() {
     ifstream fin("sprinklers2.in");
@@ -57,64 +82,27 @@ int main() {
         fin >> grid[i];
     }
 
-    for (int i = 0; i < n; i++) {
-        if (grid[0][i] == '.') open[0]++;
+    for (int i = 0; i <= n + 1; i++) {
+        rsum[0][i] = 1;
+        csum[i][0] = 1;
     }
 
-    for (int i = 1; i < n; i++) {
-        open[i] += open[i - 1];
-        for (int j = 0; j < n; j++) {
-            if (grid[i][j] == '.') open[i]++;
-        }
-    }
-
-    ll ans = 0;
-    for (int i = n - 1; i >= 0; i--) {
-        // there are no As in this row
-        if (grid[i][n - 1] == '.') {
-            ll v = open[n - 1];
-            if (i > 0) v -= open[i - 1];
-            top[i][n - 1] += modpow(2, v - 1, MOD);
-            if (top[i][n - 1] >= MOD) top[i][n - 1] -= MOD;
-        }
-
-        // there is a c
-        for (int c = 0; c < n; c++) {
-            if (grid[i][c] == '.' || n < 5) {
-                for (int h = i; h < n; h++) {
-                    if (grid[h][c + 1] == '.') {
-                        if (h == n - 1) top[i][c] += modpow(2, open[h] - open[i - 1] - 2, MOD);
-                        else top[i][c] += top[h + 1][c + 1] * calc(i, h) % MOD;
-                        if (top[i][c] >= MOD) top[i][c] -= MOD;
-                    }
-                }
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= n; j++) {
+            int ni = i + 1;
+            int nj = j + 1;
+            if (i < n && j < n && grid[i][j] == '.') { 
+                cnt++;
+                csum[ni][nj] += rsum[ni - 1][nj] * inv2;
+                rsum[ni][nj] += csum[ni][nj - 1] * inv2;
             }
-        }
-
-        // there are no Cs in this row
-        if (grid[i][0] == '.') {
-            ll v = 1;
-            if (i < n - 1) {
-                if (grid[i + 1][n - 1] == '.') v = top[i + 1][0];
-                else v = 0;
-            }
-            v *= modpow(2, open[i] - 1, MOD);
-            v %= MOD;
-            ans += v;
-            if (ans >= MOD) ans -= MOD;
-        }
-        
-        // sum up tops in row
-        for (int j = n - 2; j >= 0; j--) {
-            top[i][j] += top[i][j + 1];
-            if (top[i][j] >= MOD) top[i][j] -= MOD;
+            rsum[ni][nj] += rsum[ni][nj - 1];
+            csum[ni][nj] += csum[ni - 1][nj];
         }
     }
 
-    ans += top[0][0];
-    if (ans >= MOD) ans -= MOD;
-
-    fout << ans << '\n';
+    mi ans = rsum[n][n] + csum[n][n];
+    fout << (ans * mi(2).pow(cnt)).v << '\n';
 
     return 0;
 }
