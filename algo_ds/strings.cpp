@@ -35,6 +35,112 @@ pair<vector<int>, vector<int>> manachers(string s) {
     return {d1, d2};
 }
 
+// Polynomial Hashing
+// Does double hashing with randomization
+// precalculates N powers
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+ll modpow(ll n, ll e, ll mod) {
+    ll res = 1;
+    while (e) {
+        if (e & 1) res = res * n % mod;
+        n = n * n % mod;
+        e >>= 1;
+    }
+    return res;
+}
+
+int randval() {
+    return uniform_int_distribution<int>(2, 1000000005)(rng);
+}
+ 
+template<int N>
+struct string_hash {
+    struct hash {
+        int n;
+        array<int, 2> h;
+        static inline array<array<int, N>, 2> base, inv;
+        static constexpr int p[2] = {1000000007, 1000000009};
+        hash() { 
+            n = 0;
+            if (!base[0][0]) calc_base();
+            h = {0, 0};
+        }
+        hash(char c) : hash() {
+            *this += c;
+        }
+        hash(const hash &h2) : hash() {
+            n = h2.n;
+            h = h2.h;
+        }
+        void calc_base() {
+            for (int i = 0; i < 2; i++) {
+                base[i][0] = 1;
+                base[i][1] = randval();
+                inv[i][0] = 1;
+                inv[i][1] = modpow(base[i][1], p[i] - 2, p[i]);
+            }
+            for (int j = 2; j < N; j++) {
+                for (int i = 0; i < 2; i++) {
+                    base[i][j] = (ll) base[i][j - 1] * base[i][1] % p[i];
+                    inv[i][j] = (ll) inv[i][j - 1] * inv[i][1] % p[i];
+                }
+            }
+        }
+        bool operator==(const hash &h2) const {
+            return n == h2.n && h == h2.h;
+        }
+        bool operator<(const hash &h2) const {
+            if (n == h2.n) return h < h2.h;
+            return n < h2.n;
+        }
+        hash &operator+=(const char c) {
+            for (int i = 0; i < 2; i++) {
+                h[i] += (ll) base[i][n] * c % p[i];
+                if (h[i] >= p[i]) h[i] -= p[i];
+            }
+            n++;
+            return *this;
+        }
+        hash &operator-=(const hash &h2) {
+            for (int i = 0; i < 2; i++) {
+                h[i] -= h2.h[i];
+                if (h[i] < 0) h[i] += p[i];
+                h[i] = (ll) h[i] * inv[i][h2.n] % p[i];
+            }
+            n -= h2.n;
+            return *this;
+        }
+    };
+    vector<hash> h;
+    string_hash() : string_hash("") {}
+    string_hash(const string &s) {
+        h.resize(s.size());
+        hash cur;
+        for (int i = 0; i < (int)(s.size()); i++) {
+            cur += s[i];
+            h[i] = cur;
+        }
+    }
+    hash substr(int n, int sz) const {
+        hash res = h[n + sz - 1];
+        if (n) res -= h[n - 1];
+        return res;
+    }
+    hash val() const {
+        return h.back();
+    }
+    static hash calc(const string &s) {
+        hash cur;
+        for (char c : s) {
+            cur += c;
+        }
+        return cur;
+    }
+};
+ 
+using shash = string_hash<MAXN>;
+
 // Aho-Corasick Algorithm
 // insert strings with insert(), then build() after all done
 // trie[x].link stores suffix link (max proper suffix), trie[x].exit_link stores max suffix that is a leaf
