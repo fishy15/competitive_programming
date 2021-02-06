@@ -34,3 +34,66 @@ pair<vector<int>, vector<int>> manachers(string s) {
 
     return {d1, d2};
 }
+
+// Aho-Corasick Algorithm
+// insert strings with insert(), then build() after all done
+// trie[x].link stores suffix link (max proper suffix), trie[x].exit_link stores max suffix that is a leaf
+// SZ is size of alphabet, also can change conv function (or change to pass in a function)
+template<int SZ>
+struct aho_corasick {
+    struct node {
+        array<int, SZ> next;
+        int depth, link, exit_link, cnt, leafcnt;
+        node() : depth(0), link(-1), exit_link(-1), cnt(0), leafcnt(0) { next.fill(0); }
+    };
+    vector<node> trie;
+    aho_corasick() : trie(1) {}
+    aho_corasick(const vector<string> &v) : aho_corasick() {
+        for (auto s : v) insert(s);
+        build();
+    }
+    void clear() { trie = vector<node>(1); }
+    int conv(int c) { return c - 'a'; }
+    int insert(const string &s) {
+        int v = 0;
+        trie[0].cnt++;
+        for (auto ch : s) {
+            int c = conv(ch);
+            if (!trie[v].next[c]) {
+                trie[v].next[c] = trie.size();
+                trie.emplace_back();
+                trie.back().depth = trie[v].depth + 1;
+            }
+            v = trie[v].next[c];
+            trie[v].cnt++;
+        }
+        trie[v].leafcnt++;
+        return v;
+    }
+    int get_next(int v, int c) {
+        return trie[v].next[conv(c)];
+    }
+    void build() {
+        queue<int> q;
+        q.push(0);
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+            for (int c = 0; c < SZ; c++) {
+                if (trie[v].next[c]) {
+                    int e = trie[v].next[c];
+                    int link = trie[e].link = trie[v].link == -1 ? 0 : trie[trie[v].link].next[c]; 
+                    trie[e].exit_link = trie[link].leafcnt ? link : trie[link].exit_link;
+                    q.push(e);
+                }
+            }
+            if (v) {
+                for (int c = 0; c < SZ; c++) {
+                    if (!trie[v].next[c]) {
+                        trie[v].next[c] = trie[trie[v].link].next[c];
+                    }
+                }
+            }
+        }
+    }
+};
