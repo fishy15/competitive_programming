@@ -1,3 +1,29 @@
+/*
+ * Each player must travel on some monotone sequence, where Player 1 will move to a lower number and 
+ * Player 2 will move to a higher number. They also ideally want to go on the longest subsequence possible.
+ * If they don't, then the person who chose the longer subsequence will win (except potentially if their 
+ * paths would intersect). This means that person 1 should choose one of the longest subsequences, and then
+ * person 2 will either pick the same subsequence or a separate one of equal length.
+ *
+ * Additionally, note that player 1 must start at some position where both sides are potential directions 
+ * to go. If not, then player 2 is able to block off player 1's movement and win directly.
+ *
+ * Suppose there is only 1 subsequence of the longest length. Then both player 1 and player 2 will be on 
+ * this sequence. However, player 2 can then choose the farthest distance away on that subsequence that is
+ * an odd number of moves away. If player 1 chooses to move in the opposite direction of the longest 
+ * subsequence, then he will have at most X - 1 moves while player 2 will have at least X - 1 moves (where
+ * X is the length of the maximum monotonic subsequence). Therefore, player 1 will always lose in this case.
+ * In the case where there are at least 3 subsequences of the longest length, then player 2 can always 
+ * choose another subsequence of the same length, so player 2 will win.
+ *
+ * In the case where there are 2 subsequences of the longest length, player 2 can pick another subsequence
+ * if the two sequences are disjoint. If they have their greatest value in common, then player 1 will 
+ * start at the greatest value and player 2 will be at one of the ends (if player 2 is any closer, player
+ * 1 can move in the opposite side and win). If the number of moves between player 1 and 2 is even, then 
+ * player 1 will win, otherwise player 2 will win. This can be the only location where player 1 can win,
+ * so the answer is either 0 or 1.
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -27,36 +53,11 @@ using namespace std;
 
 int n;
 int nums[MAXN];
-int ans;
 
 struct person {
-    int lg[MAXN];
-    int l[MAXN][18];
-    int r[MAXN][18];
-
-    void lcalc() {
-        lg[1] = 0;
-        for (int i = 2; i < MAXN; i++) {
-            lg[i] = lg[i / 2] + 1;
-        }
-    }
-
-    void calc(int x[MAXN][18]) {
-        for (int j = 1; j < 18; j++) {
-            for (int i = 0; i + (1 << j) <= n; i++) {
-                x[i][j] = max(x[i][j - 1], x[i + (1 << (j - 1))][j - 1]);
-            }
-        }
-    }
-
-    int qry(int x[MAXN][18], int a, int b) {
-        a = max(a, 0);
-        b = min(b, n - 1);
-        if (b < a) return 0;
-        int log = lg[b - a + 1];
-        return max(x[a][log], x[b - (1 << log) + 1][log]);
-    }
-} p1, p2;
+    int l[MAXN];
+    int r[MAXN];
+} p1;
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
@@ -66,56 +67,52 @@ int main() {
         cin >> nums[i];
     }
 
-    memset(p1.l, 0, sizeof p1.l);
-    memset(p1.r, 0, sizeof p1.r);
-    memset(p2.l, 0, sizeof p2.l);
-    memset(p2.r, 0, sizeof p2.r);
-
+    pair<int, int> best = {-1, -1};
     // solve for rightward movement
     for (int i = 1; i < n; i++) {
         if (nums[i - 1] < nums[i]) {
-            p1.r[i][0] = p1.r[i - 1][0] + 1;
-        } else {
-            p2.r[i][0] = p2.r[i - 1][0] + 2;
+            p1.r[i] = p1.r[i - 1] + 1;
         }
     }
 
     // solve for leftward movement
     for (int i = n - 2; i >= 0; i--) {
         if (nums[i] > nums[i + 1]) {
-            p1.l[i][0] = p1.l[i + 1][0] + 1;
-        } else {
-            p2.l[i][0] = p2.l[i + 1][0] + 2;
+            p1.l[i] = p1.l[i + 1] + 1;
         }
     }
 
-    p2.lcalc();
-    p2.calc(p2.l);
-    p2.calc(p2.r);
+    for (int i = 0; i < n; i++) {
+        if (p1.l[i] > best.first) {
+            best = {p1.l[i], 1};
+        } else if (p1.l[i] == best.first) {
+            best.second++;
+        }
 
-    for (int i = 1; i < n - 1; i++) {
-        if (p1.l[i] && p1.r[i]) {
-            int can_move = p1.l[i][0];
-            if (can_move % 2 == 0) can_move--;
-            if (can_move >= p1.r[i][0]) continue;
-
-            can_move = p1.r[i][0];
-            if (can_move % 2 == 0) can_move--;
-            if (can_move >= p1.l[i][0]) continue;
-
-            int best = 0;
-            best = max(best, p2.qry(p2.l, 0, i - p1.r[i][0] - 1));
-            best = max(best, p2.qry(p2.l, i + 1, n - 1));
-            best = max(best, p2.qry(p2.r, i + p1.l[i][0] + 1, n));
-            best = max(best, p2.qry(p2.r, 0, i - 1));
-
-            if (best >= max(p1.l[i][0], p1.r[i][0])) continue;
-
-            ans++;
+        if (p1.r[i] > best.first) {
+            best = {p1.r[i], 1};
+        } else if (p1.r[i] == best.first) {
+            best.second++;
         }
     }
 
-    cout << ans << '\n';
+    if (best.second != 2) {
+        cout << "0\n";
+        return 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (p1.l[i] == best.first && p1.r[i]) {
+            if (best.first % 2 == 0) {
+                cout << "1\n";
+            } else {
+                cout << "0\n";
+            }
+            return 0;
+        }
+    }
+
+    cout << "0\n";
 
     return 0;
 }
