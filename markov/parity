@@ -1,0 +1,3 @@
+oo:
+o::odd
+::even
