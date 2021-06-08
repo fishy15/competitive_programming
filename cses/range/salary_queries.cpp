@@ -22,40 +22,54 @@
 
 using namespace std;
 
-struct node {
-    int l, r, v;
-    node *c[2];
-    node(int l, int r) : l{l}, r{r} {
-        v = 0;
-        c[0] = nullptr;
-        c[1] = nullptr;
-    } 
-    void upd(int x, int v) {
-        this->v += v;
+struct st {
+    struct node {
+        int l, r, v;
+        int c[2];
+        node(int l, int r) : l(l), r(r) {
+            v = 0;
+            c[0] = -1;
+            c[1] = -1;
+        } 
+    };
+    vector<node> dq;
+    int head = -1;
+    int nn(int l, int r) { dq.emplace_back(l, r); cout << "created " << dq.size() - 1 << '\n'; return dq.size() - 1; }
+    void upd(int n, int x, int v) {
+        dq[n].v += v;
+        int l = dq[n].l;
+        int r = dq[n].r;
         if (l != r) {
             int m = l + (r - l) / 2;
             if (x <= m) {
-                if (!c[0]) c[0] = new node(l, m);
-                c[0]->upd(x, v);
+                if (dq[n].c[0] == -1) dq[n].c[0] = nn(l, m);
+                cout << "from " << n << " to " << dq[n].c[0] << '\n';
+                upd(dq[n].c[0], x, v);
             } else {
-                if (!c[1]) c[1] = new node(m + 1, r);
-                c[1]->upd(x, v);
+                if (dq[n].c[1] == -1) dq[n].c[1] = nn(m + 1, r);
+                cout << "from " << n << " to " << dq[n].c[1] << '\n';
+                upd(dq[n].c[1], x, v);
             }
         }
     }
-    int qry(int x, int y) {
-        if (x <= l && r <= y) return v;
+    int qry(int n, int x, int y) {
+        int l = dq[n].l;
+        int r = dq[n].r;
+        if (x <= l && r <= y) return dq[n].v;
         if (y < l || x > r) return 0;
         int res = 0;
-        if (c[0]) res += c[0]->qry(x, y);
-        if (c[1]) res += c[1]->qry(x, y);
+        if (dq[n].c[0] != -1) res += qry(dq[n].c[0], x, y);
+        if (dq[n].c[1] != -1) res += qry(dq[n].c[1], x, y);
         return res;
     }
+    st(int x, int y) { head = nn(x, y); }
+    void upd(int x, int v) { return upd(head, x, v); };
+    int qry(int x, int y) { return qry(head, x, y); };
 };
 
 int n, q;
 int nums[MAXN];
-node *st = new node(1, 1000000000);
+st segtree = st(1, 1000000000);
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
@@ -63,19 +77,19 @@ int main() {
     cin >> n >> q;
     for (int i = 1; i <= n; i++) {
         cin >> nums[i];
-        st->upd(nums[i], 1);
+        segtree.upd(nums[i], 1);
     }
 
     while (q--) {
         char t; cin >> t;
         if (t == '!') {
             int k, x; cin >> k >> x;
-            st->upd(nums[k], -1);
+            segtree.upd(nums[k], -1);
             nums[k] = x;
-            st->upd(nums[k], 1);
+            segtree.upd(nums[k], 1);
         } else {
             int a, b; cin >> a >> b;
-            cout << st->qry(a, b) << '\n';
+            cout << segtree.qry(a, b) << '\n';
         }
     }
 
