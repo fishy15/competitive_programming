@@ -1,7 +1,5 @@
-// :pray: :steph:
-// :pray: :bakekaga:
-
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -11,8 +9,11 @@
 #include <queue>
 #include <set>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 
 #define ll long long
+#define ld long double
 #define eps 1e-8
 #define MOD 1000000007
 
@@ -25,7 +26,10 @@
 using namespace std;
 
 int main() {
-    cin.tie(0); ios::sync_with_stdio(0);
+    cin.tie(0)->sync_with_stdio(0);
+
+    int n; cin >> n;
+    cout << 2 - n << '\n';
 
     return 0;
 }

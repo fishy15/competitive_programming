@@ -1,6 +1,5 @@
-// :pray: :fishy:
-
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <array>
@@ -10,8 +9,11 @@
 #include <queue>
 #include <set>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 
 #define ll long long
+#define ld long double
 #define eps 1e-8
 #define MOD 1000000007
 
@@ -23,20 +25,11 @@
 
 using namespace std;
 
-int n, m, q;
-vector<array<int, 2>> times;
-vector<array<int, 3>> ans;
-
 int main() {
-    cin.tie(0); ios::sync_with_stdio(0);
+    cin.tie(0)->sync_with_stdio(0);
 
-    cin >> n >> m >> q;
+    int t; cin >> t;
+    while (t--) solve();
 
-    for (int i = 0; i < m; i++) {
-        int x; cin >> x;
-        times.push_back({x, i});
-    }
-
-    sort(times.begin(), times.end());
     return 0;
 }
