@@ -11,6 +11,8 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <functional>
+#include <numeric>
 
 #define ll long long
 #define ld long double
