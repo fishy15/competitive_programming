@@ -24,7 +24,7 @@ using namespace std;
 
 int n, k;
 vector<pair<int, int>> mov;
-set<int> cur;
+multiset<int> cur;
 int ans;
 
 int main() {
@@ -41,12 +41,24 @@ int main() {
         return p1.second < p2.second;
     });
 
-    for (auto p : mov) {
-        while (!cur.empty()) {
-            int v = *cur.begin();
-            if (v > mov.first)
+    for (int i = 0; i < k; i++) {
+        cur.insert(0);
+    }
+
+    int ans = 0;
+    for (auto [s, e] : mov) {
+        if (!cur.empty()) {
+            auto it = cur.upper_bound(s);
+            if (it != cur.begin()) {
+                it--;
+                cur.erase(it);
+                cur.insert(e);
+                ans++;
+            }
         }
     }
+
+    cout << ans << '\n';
 
     return 0;
 }
