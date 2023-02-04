@@ -37,21 +37,27 @@ struct segtree {
     }
 };
 
+#include <vector>
+using namespace std;
+
 // lazy segtree (range add update, range min query)
 struct lazy_segtree {
-    int st[4 * MAXN];
-    int lazy[4 * MAXN];
-    void build(int v, int l, int r) {
+    int n;
+    mutable vector<int> st;
+    mutable vector<int> lazy;
+    lazy_segtree(int n) : n(n), st(4 * n), lazy(4 * n) {}
+    lazy_segtree(int n, vector<int> &nums) : lazy_segtree(n) { build(1, 0, n - 1, nums); }
+    void build(int v, int l, int r, const vector<int> &nums) {
         if (l == r) {
             st[v] = nums[l];
         } else {
             int m = (l + r) / 2;
-            build(2 * v, l, m);
-            build(2 * v + 1, m + 1, r);
+            build(2 * v, l, m, nums);
+            build(2 * v + 1, m + 1, r, nums);
             st[v] = max(st[2 * v], st[2 * v + 1]);
         }
     }
-    void push(int v, int l, int r) {
+    void push(int v, int l, int r) const {
         if (l != r) {
             lazy[2 * v] += lazy[v];
             lazy[2 * v + 1] += lazy[v];
@@ -59,7 +65,8 @@ struct lazy_segtree {
         st[v] += lazy[v];
         lazy[v] = 0;
     }
-    void upd(int x, int y, int q, int v = 1, int l = 0, int r = m - 1) {
+    void upd(int x, int y, int q) { upd(x, y, q, 1, 0, n - 1); }
+    void upd(int x, int y, int q, int v, int l, int r) {
         push(v, l, r);
         if (r < x || l > y) return;
         if (x <= l && r <= y) {
@@ -72,7 +79,8 @@ struct lazy_segtree {
             st[v] = max(st[2 * v], st[2 * v + 1]);
         }
     }
-    int qry(int x, int y, int v = 1, int l = 0, int r = m - 1) {
+    int qry(int x, int y) const { return qry(x, y, 1, 0, n - 1); }
+    int qry(int x, int y, int v, int l, int r) const {
         push(v, l, r);
         if (r < x || l > y) return 0;
         if (x <= l && r <= y) return st[v];
