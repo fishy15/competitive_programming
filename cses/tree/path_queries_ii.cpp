@@ -26,38 +26,43 @@
 
 using namespace std;
 
-int n, q;
-int val[MAXN];
-vector<int> adj[MAXN];
-
-struct st {
-    int st[4 * MAXN];
-
-    void upd(int x, int y, int v = 1, int l = 0, int r = n - 1) {
-        if (l == r) {
+struct segtree {
+    int n;
+    vector<int> st;
+    segtree(int n) : n(n), st(4 * n) {}
+    segtree(int n, vector<int> &nums) : segtree(n) { build(1, 0, n, nums); }
+    void build(int v, int l, int r, vector<int> &nums) {
+        if (l + 1 == r) {
+            st[v] = nums[l];
+        } else {
+            int m = (l + r) / 2;
+            build(2 * v, l, m, nums);
+            build(2 * v + 1, m, r, nums);
+            st[v] = max(st[2 * v], st[2 * v + 1]);
+        }
+    }
+    void upd(int x, int y) { upd(1, 0, n, x, y); }
+    void upd(int v, int l, int r, int x, int y) {
+        if (l + 1 == r) {
             st[v] = y;
         } else {
             int m = (l + r) / 2;
-            if (x <= m) {
-                upd(x, y, 2 * v, l, m);
+            if (x < m) {
+                upd(2 * v, l, m, x, y);
             } else {
-                upd(x, y, 2 * v + 1, m + 1, r);
+                upd(2 * v + 1, m, r, x, y);
             }
             st[v] = max(st[2 * v], st[2 * v + 1]);
         }
     }
-
-    int qry(int x, int y, int v = 1, int l = 0, int r = n - 1) {
-        if (x <= l && r <= y) {
-            return st[v];
-        } else if (x > r || y < l) {
-            return 0;
-        } else {
-            int m = (l + r) / 2;
-            return max(qry(x, y, 2 * v, l, m), qry(x, y, 2 * v + 1, m + 1, r));
-        }
+    int qry(int x, int y) const { return qry(1, 0, n, x, y + 1); }
+    int qry(int v, int l, int r, int x, int y) const {
+        if (r <= x || y <= l) return 0;
+        if (x <= l && r <= y) return st[v];
+        int m = (l + r) / 2;
+        return max(qry(2 * v, l, m, x, y), qry(2 * v + 1, m, r, x, y));
     }
-} st;
+};
 
 template<bool op_edges = false>
 struct hld {
@@ -134,11 +139,15 @@ struct hld {
 int main() {
     cin.tie(0)->sync_with_stdio(0);
 
+    int n, q;
     cin >> n >> q;
+
+    vector<int> val(n);
     for (int i = 0; i < n; i++) {
         cin >> val[i];
     }
 
+    segtree st(n, val);
     hld<> tree(n);
 
     for (int i = 0; i < n - 1; i++) {
@@ -150,13 +159,13 @@ int main() {
     tree.dfs_size();
     tree.dfs_hld();
 
-    auto upd_node = [&tree](int v, int val) {
-        tree.op_node(v, [val](int v) { st.upd(v, val); });
+    auto upd_node = [&tree, &st](int v, int val) {
+        tree.op_node(v, [val, &st](int v) { st.upd(v, val); });
     };
 
-    auto qry_path = [&tree](int x, int y) {
+    auto qry_path = [&tree, &st](int x, int y) {
         int res = 0;
-        tree.op_path(x, y, [&res](int x, int y) { res = max(res, st.qry(x, y)); });
+        tree.op_path(x, y, [&res, &st](int x, int y) { res = max(res, st.qry(x, y)); });
         return res;
     };
 
