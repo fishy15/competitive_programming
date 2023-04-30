@@ -1,0 +1,93 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <vector>
+#include <array>
+#include <algorithm>
+#include <utility>
+#include <map>
+#include <queue>
+#include <set>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <functional>
+#include <numeric>
+
+#define ll long long
+#define ld long double
+#define eps 1e-8
+#define MOD 1000000007
+
+#define INF 0x3f3f3f3f
+#define INFLL 0x3f3f3f3f3f3f3f3f
+
+// change if necessary
+#define MAXN 1000000
+
+using namespace std;
+
+struct DSU {
+    vector<int> dsu;
+    vector<int> sz;
+
+    DSU(int n) : dsu(n), sz(n) {
+        iota(dsu.begin(), dsu.end(), 0);
+        fill(sz.begin(), sz.end(), 1); 
+    }
+
+    int find(int x) {
+        return x == dsu[x] ? x : dsu[x] = find(dsu[x]);
+    }
+
+    void join(int x, int y) {
+        if ((x = find(x)) != (y = find(y))) {
+            if (sz[x] < sz[y]) swap(x, y);
+            dsu[y] = x;
+            sz[x] += sz[y];
+        }
+    }
+};
+
+int main() {
+    cin.tie(0)->sync_with_stdio(0);
+
+    int n, m;
+    cin >> n >> m;
+
+    DSU dsu(n);
+    vector<int> deg(n);
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        cin >> a >> b;
+        a--;
+        b--;
+
+        deg[a]++;
+        deg[b]++;
+        dsu.join(a, b);
+    }
+
+    if (n - 1 != m) {
+        cout << "No\n";
+        return 0;
+    }
+
+    auto deg_one = count(deg.begin(), deg.end(), 1);
+    auto deg_two = count(deg.begin(), deg.end(), 2);
+
+    auto zero_par = dsu.find(0);
+    bool ok = true;
+    for (int i = 1; i < n; i++) {
+        ok &= dsu.find(i) == zero_par;
+    }
+
+    if (ok && deg_one == 2 && deg_two == n - 2) {
+        cout << "Yes\n";
+    } else {
+        cout << "No\n";
+    }
+
+
+    return 0;
+}
