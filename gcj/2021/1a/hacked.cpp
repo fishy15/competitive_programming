@@ -26,32 +26,6 @@
 
 using namespace std;
 
-struct trie {
-    struct node {
-        array<int, 41> next;
-        int cnt, leafcnt;
-        node() : cnt(0) { next.fill(-1); }
-    };
-
-    vector<node> tr;
-    trie() : tr(1) {}
-
-    int insert(const vector<int> vec) {
-        int v = 0;
-        tr[0].cnt++;
-        for (int x : vec) {
-            if (tr[v].next[x] == -1) {
-                tr[v].next[x] = tr.size();
-                tr.emplace_back();
-            }
-            v = tr[v].next[x];
-            tr[v].cnt++;
-        }
-        tr[v].leafcnt++;
-        return v;
-    }
-};
-
 void solve() {
     int n, q; cin >> n >> q;
     vector<pair<string, int>> ppl(n);
@@ -60,7 +34,9 @@ void solve() {
         cin >> ppl[i].first >> ppl[i].second;
     }
 
-    unordered_map<int, ll> beg, end;
+    array<ll, 70000> beg, end;
+    beg.fill(0);
+    end.fill(0);
     int m = q / 2;
 
     vector<int> beg_mask(1 << m);

@@ -99,36 +99,27 @@ int main() {
     }
 
     sort(pts.begin(), pts.end());
-
-    if (n <= 2000) {
-        vector<vec> v2 = pts;
-        for (auto v : v2) pts.push_back(v);
-        for (int i = 0; i < n; i++) {
-            vec cur = {0, 0};
-            for (int j = i; j < i + n; j++) {
-                cur += pts[j];
-                ans = max(ans, cur.dist());
-            }
-        }
-        cout << ans << '\n';
-        return 0;
-    }
+    vector<vec> v2 = pts;
+    for (auto v : v2) pts.push_back(v);
 
     vec cur = pts[0];
     int r = 1;
+
+    for (int i = 0; i < 2 * n; i++) {
+        cout << pts[i].x << ' ' << pts[i].y << '\n';
+    }
 
     for (int l = 0; l < n; l++) {
         if (l == r) {
             cur += pts[r];
             r++;
-            if (r == n) r = 0;
         }
-        while (l != r && (same(pts[l], pts[r]) || pts[l].cross(pts[r]) > 0)) {
+        while (r < l + n && (same(pts[l], pts[r]) || pts[l].cross(pts[r]) > 0)) {
             ans = max(ans, cur.dist());
             cur += pts[r];
             r++;
-            if (r == n) r = 0;
         }
+        /* cout << l << ' ' << r << '\n'; */
         ans = max(ans, cur.dist());
         cur -= pts[l];
     }
