@@ -28,28 +28,23 @@
 using namespace std;
 
 void solve() {
-    int n, m;
-    cin >> n >> m;
-
-    vector<int> ans(n, -1);
-    set<int> added;
+    int n;
+    string s;
     
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
+    cin >> n >> s;
 
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
+    for (int i = 0; i < n - 1; i++) {
+        auto ss = s.substr(i, 2);
+        if (ss == "LR") {
+            cout << i + 1 << '\n';
+            return;
+        } else if (ss == "RL") {
+            cout << 0 << '\n';
+            return;
         }
     }
 
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
-    cout << '\n';
+    cout << "-1\n";
 }
 
 int main() {

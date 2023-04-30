@@ -31,25 +31,21 @@ void solve() {
     int n, m;
     cin >> n >> m;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
-
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
-        }
-    }
-
-    reverse(ans.begin(), ans.end());
+    multiset<int> nums;
     for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
+        int a;
+        cin >> a;
+        nums.insert(a);
     }
-    cout << '\n';
+
+    for (int i = 0; i < m; i++) {
+        int b;
+        cin >> b;
+        nums.erase(nums.begin());
+        nums.insert(b);
+    }
+
+    cout << accumulate(nums.begin(), nums.end(), 0LL) << '\n';
 }
 
 int main() {

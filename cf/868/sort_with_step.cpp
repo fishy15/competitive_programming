@@ -28,28 +28,29 @@
 using namespace std;
 
 void solve() {
-    int n, m;
-    cin >> n >> m;
+    int n, k;
+    cin >> n >> k;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
+    vector buckets(k, 0);
+    for (int i = 0; i < n; i++) {
         int x;
         cin >> x;
-        added.insert(x);
+        x--;
 
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
+        if (x % k != i % k) {
+            buckets[i % k]++;
         }
     }
 
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
+    int sum = accumulate(buckets.begin(), buckets.end(), 0);
+    int one_cnt = count(buckets.begin(), buckets.end(), 1);
+    if (sum == 0) {
+        cout << "0\n";
+    } else if (sum == 2 && one_cnt == 2) {
+        cout << "1\n";
+    } else {
+        cout << "-1\n";
     }
-    cout << '\n';
 }
 
 int main() {

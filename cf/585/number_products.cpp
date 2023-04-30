@@ -27,40 +27,35 @@
 
 using namespace std;
 
-void solve() {
-    int n, m;
-    cin >> n >> m;
-
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
-
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
-        }
-    }
-
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
-    cout << '\n';
-}
-
 int main() {
     cin.tie(0)->sync_with_stdio(0);
 
-    int t;
-    cin >> t;
+    int n;
+    cin >> n;
 
-    while (t--) {
-        solve();
+    vector<int> nums(n);
+    for (int i = 0; i < n; i++) {
+        cin >> nums[i];
     }
+
+    ll pos_cnt = 0;
+    ll neg_cnt = 0;
+
+    ll pos_ans = 0;
+    ll neg_ans = 0;
+
+    for (auto x : nums) {
+        pos_cnt++;
+        if (x < 0) {
+            swap(pos_cnt, neg_cnt);
+        }
+
+        pos_ans += pos_cnt;
+        neg_ans += neg_cnt;
+    }
+
+    cout << neg_ans << ' ' << pos_ans << '\n';
+
 
     return 0;
 }

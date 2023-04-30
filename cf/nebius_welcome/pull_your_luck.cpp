@@ -28,28 +28,25 @@
 using namespace std;
 
 void solve() {
-    int n, m;
-    cin >> n >> m;
+    ll n, x, p;
+    cin >> n >> x >> p;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
+    int needed = x == 0 ? 0 : n - x;
 
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
+    ll steps = 0;
+    for (ll i = 1, cur_step = 1; i <= min(2 * n, p); i++, cur_step++) {
+        if (cur_step >= n) cur_step -= n;
+
+        steps += cur_step;
+        if (steps >= n) steps -= n;
+
+        if (needed == steps) {
+            cout << "Yes\n";
+            return;
         }
     }
 
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
-    cout << '\n';
+    cout << "No\n";
 }
 
 int main() {

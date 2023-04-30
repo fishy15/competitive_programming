@@ -28,28 +28,7 @@
 using namespace std;
 
 void solve() {
-    int n, m;
-    cin >> n >> m;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
-
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
-        }
-    }
-
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
-    cout << '\n';
 }
 
 int main() {
@@ -57,10 +36,6 @@ int main() {
 
     int t;
     cin >> t;
-
-    while (t--) {
-        solve();
-    }
 
     return 0;
 }

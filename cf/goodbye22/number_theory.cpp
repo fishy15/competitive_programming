@@ -13,6 +13,8 @@
 #include <cstring>
 #include <functional>
 #include <numeric>
+#include <chrono>
+#include <random>
 
 #define ll long long
 #define ld long double
@@ -27,29 +29,38 @@
 
 using namespace std;
 
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
 void solve() {
-    int n, m;
-    cin >> n >> m;
+    int n;
+    cin >> n;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
+    vector<ll> nums(n);
+    for (int i = 0; i < n; i++) {
+        cin >> nums[i];
+    }
 
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
+    for (int i = 0; i < 1'000; i++) {
+        ll v = uniform_int_distribution<ll>(1, 3e18)(rng);
+
+        bool ok = true;
+        for (int j = 0; j < n; j++) {
+            for (int k = j + 1; k < n; k++) {
+                if (gcd(nums[j] + v, nums[k] + v) != 1) {
+                    ok = false;
+                    goto end;
+                }
+            }
+        }
+
+end:
+        if (ok) {
+            cout << "YES\n";
+            return;
         }
     }
 
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
-    cout << '\n';
+    cout << "NO\n";
 }
 
 int main() {

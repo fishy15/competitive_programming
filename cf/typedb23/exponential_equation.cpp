@@ -13,6 +13,7 @@
 #include <cstring>
 #include <functional>
 #include <numeric>
+#include <optional>
 
 #define ll long long
 #define ld long double
@@ -27,29 +28,24 @@
 
 using namespace std;
 
+optional<ll> pow(ll n, ll x, ll limit) {
+    ll res = 1;
+    for (ll i = 0; i < x; i++) {
+        res *= n;
+        if (res > limit) return {};
+    }
+    return res;
+}
+
 void solve() {
-    int n, m;
-    cin >> n >> m;
+    ll n;
+    cin >> n;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
-
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
-        }
+    if (n % 2 == 0) {
+        cout << 1 << ' ' << n / 2 << '\n';
+    } else {
+        cout << "-1\n";
     }
-
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
-    cout << '\n';
 }
 
 int main() {

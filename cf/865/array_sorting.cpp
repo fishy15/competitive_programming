@@ -28,28 +28,28 @@
 using namespace std;
 
 void solve() {
-    int n, m;
-    cin >> n >> m;
+    int n;
+    cin >> n;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
+    ll last_sum = 0;
+    ll other_sum = 0;
+
+    for (int i = 0; i < n; i++) {
         int x;
         cin >> x;
-        added.insert(x);
 
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
+        if (i % 2 == (n - 1) % 2) {
+            last_sum += x;
+        } else {
+            other_sum += x;
         }
     }
 
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
+    if (n % 2 == 1 || last_sum >= other_sum) {
+        cout << "YES\n";
+    } else {
+        cout << "NO\n";
     }
-    cout << '\n';
 }
 
 int main() {
@@ -57,7 +57,7 @@ int main() {
 
     int t;
     cin >> t;
-
+    
     while (t--) {
         solve();
     }

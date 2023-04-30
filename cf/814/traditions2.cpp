@@ -28,28 +28,21 @@
 using namespace std;
 
 void solve() {
-    int n, m;
-    cin >> n >> m;
+    int n;
+    cin >> n;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
-
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
-        }
-    }
-
-    reverse(ans.begin(), ans.end());
+    vector<int> nums(n);
     for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
+        cin >> nums[i];
     }
-    cout << '\n';
+
+    vector<array<int, 2>> nxt_val(n);
+    vector<array<int, 2>> dp(n, {INF, INF});
+    nxt_val[0][0] = nums[1]
+
+    for (int i = 0; i < n - 1; i++) {
+        if (
+    }
 }
 
 int main() {

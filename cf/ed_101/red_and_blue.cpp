@@ -28,28 +28,39 @@
 using namespace std;
 
 void solve() {
-    int n, m;
-    cin >> n >> m;
+    int n;
+    cin >> n;
 
-    vector<int> ans(n, -1);
-    set<int> added;
-    
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
-
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
-        }
-    }
-
-    reverse(ans.begin(), ans.end());
+    vector<int> r(n);
     for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
+        cin >> r[i];
     }
-    cout << '\n';
+
+    int m;
+    cin >> m;
+
+    vector<int> b(m);
+    for (int i = 0; i < m; i++) {
+        cin >> b[i];
+    }
+
+    ll max_r = 0;
+    ll cur_r = 0;
+
+    for (int i = 0; i < n; i++) {
+        cur_r += r[i];
+        max_r = max(max_r, cur_r);
+    }
+
+    ll max_b = 0;
+    ll cur_b = 0;
+
+    for (int i = 0; i < m; i++) {
+        cur_b += b[i];
+        max_b = max(max_b, cur_b);
+    }
+
+    cout << max_r + max_b << '\n';
 }
 
 int main() {

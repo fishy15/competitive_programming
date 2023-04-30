@@ -23,43 +23,25 @@
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
 // change if necessary
-#define MAXN 1000000
+#define MAXN 200010
 
 using namespace std;
 
-void solve() {
-    int n, m;
-    cin >> n >> m;
-
-    vector<int> ans(n, -1);
-    set<int> added;
+struct DSU {
     
-    for (int i = 0; i < m; i++) {
-        int x;
-        cin >> x;
-        added.insert(x);
+};
 
-        auto idx = (int) added.size() - 1;
-        if (idx < n && ans[idx] == -1) {
-            ans[idx] = i + 1;
-        }
-    }
-
-    reverse(ans.begin(), ans.end());
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
-    cout << '\n';
-}
+int n, m;
+bool ans[MAXN];
+int qry[MAXN][3];
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
 
-    int t;
-    cin >> t;
+    cin >> n >> m;
 
-    while (t--) {
-        solve();
+    for (int i = 0; i < m; i++) {
+        cin >> qry[i][0] >> qry[i][1] >> qry[i][2];
     }
 
     return 0;
