@@ -29,38 +29,43 @@ using namespace std;
 struct segtree {
     int n;
     vector<int> st;
-    segtree(int n) : n(n), st(4 * n) {}
-    segtree(int n, vector<int> &nums) : segtree(n) { build(1, 0, n, nums); }
-    void build(int v, int l, int r, vector<int> &nums) {
-        if (l + 1 == r) {
-            st[v] = nums[l];
-        } else {
-            int m = (l + r) / 2;
-            build(2 * v, l, m, nums);
-            build(2 * v + 1, m, r, nums);
-            st[v] = max(st[2 * v], st[2 * v + 1]);
+
+    segtree(int n) : n(n), st(2 * n) {}
+    segtree(int n, vector<int> &nums) : segtree(n) { 
+        copy(nums.begin(), nums.end(), st.begin() + n);
+        for (int i = n - 1; i > 0; i--) {
+            st[i] = max(st[i << 1], st[i << 1 | 1]);
         }
     }
-    void upd(int x, int y) { upd(1, 0, n, x, y); }
-    void upd(int v, int l, int r, int x, int y) {
-        if (l + 1 == r) {
-            st[v] = y;
-        } else {
-            int m = (l + r) / 2;
-            if (x < m) {
-                upd(2 * v, l, m, x, y);
-            } else {
-                upd(2 * v + 1, m, r, x, y);
+
+    void upd(int x, int y) { 
+        x += n;
+        st[x] = y;
+        while (x > 1) {
+            st[x >> 1] = max(st[x], st[x ^ 1]);
+            x >>= 1;
+        }
+    }
+
+    int qry(int l, int r) const {
+        int ans = 0;
+        l += n;
+        r += n;
+        while (l < r) {
+            if (l & 1) {
+                ans = max(ans, st[l]);
+                l++;
             }
-            st[v] = max(st[2 * v], st[2 * v + 1]);
+
+            if (r & 1) {
+                r--;
+                ans = max(ans, st[r]);
+            }
+
+            l >>= 1;
+            r >>= 1;
         }
-    }
-    int qry(int x, int y) const { return qry(1, 0, n, x, y + 1); }
-    int qry(int v, int l, int r, int x, int y) const {
-        if (r <= x || y <= l) return 0;
-        if (x <= l && r <= y) return st[v];
-        int m = (l + r) / 2;
-        return max(qry(2 * v, l, m, x, y), qry(2 * v + 1, m, r, x, y));
+        return ans;
     }
 };
 
@@ -123,16 +128,16 @@ struct hld {
     void op_path(int x, int y, F op) {
         while (head[x] != head[y]) {
             if (d[head[x]] > d[head[y]]) swap(x, y);
-            op(in[head[y]], in[y]);
+            op(in[head[y]], in[y] + 1);
             y = par[head[y]];
         }
         if (d[x] > d[y]) swap(x, y);
-        op(in[x] + (op_edges ? 1 : 0), in[y]);
+        op(in[x] + (op_edges ? 1 : 0), in[y] + 1);
     }
 
     template<typename F>
     void op_subtree(int x, F op) { 
-        op(in[x] + (op_edges ? 1 : 0), in[x] + sz[x] - 1);
+        op(in[x] + (op_edges ? 1 : 0), in[x] + sz[x]);
     }
 };
 
