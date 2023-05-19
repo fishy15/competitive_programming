@@ -88,3 +88,47 @@ struct lazy_segtree {
         return max(qry(x, y, 2 * v, l, m), qry(x, y, 2 * v + 1, m + 1, r));
     }
 };
+
+// range max point update
+struct iterative_segtree {
+    int n;
+    vector<int> st;
+
+    segtree(int n) : n(n), st(2 * n) {}
+    segtree(int n, vector<int> &nums) : segtree(n) { 
+        copy(nums.begin(), nums.end(), st.begin() + n);
+        for (int i = n - 1; i > 0; i--) {
+            st[i] = max(st[i << 1], st[i << 1 | 1]);
+        }
+    }
+
+    void upd(int x, int y) { 
+        x += n;
+        st[x] = y;
+        while (x > 1) {
+            st[x >> 1] = max(st[x], st[x ^ 1]);
+            x >>= 1;
+        }
+    }
+
+    int qry(int l, int r) const {
+        int ans = 0;
+        l += n;
+        r += n;
+        while (l < r) {
+            if (l & 1) {
+                ans = max(ans, st[l]);
+                l++;
+            }
+
+            if (r & 1) {
+                r--;
+                ans = max(ans, st[r]);
+            }
+
+            l >>= 1;
+            r >>= 1;
+        }
+        return ans;
+    }
+};

@@ -57,15 +57,15 @@ struct hld {
     void op_path(int x, int y, F op) {
         while (head[x] != head[y]) {
             if (d[head[x]] > d[head[y]]) swap(x, y);
-            op(in[head[y]], in[y]);
+            op(in[head[y]], in[y] + 1);
             y = par[head[y]];
         }
         if (d[x] > d[y]) swap(x, y);
-        op(in[x] + (op_edges ? 1 : 0), in[y]);
+        op(in[x] + (op_edges ? 1 : 0), in[y] + 1);
     }
 
     template<typename F>
     void op_subtree(int x, F op) { 
-        op(in[x] + (op_edges ? 1 : 0), in[x] + sz[x] - 1);
+        op(in[x] + (op_edges ? 1 : 0), in[x] + sz[x]);
     }
 };
