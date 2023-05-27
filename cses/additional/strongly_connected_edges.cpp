@@ -69,26 +69,17 @@ int main() {
     }
 
     vector<bool> vis(n);
-    vector<bool> dir_found(m);
+    vector<bool> on_tree(m);
+    vector<int> d(n);
 
     auto dfs_make = y_combinator([&](auto self, int u) -> void {
-        if (!vis[u]) {
-            vis[u] = true;
-            for (auto v_idx : adj[u]) {
-                if (!dir_found[v_idx]) {
-                    auto v = get_edge(u, v_idx);
-                    dir_found[v_idx] = true;
-                    if (vis[v]) {
-                        if (edges[v_idx].first != v) {
-                            swap(edges[v_idx].first, edges[v_idx].second);
-                        }
-                    } else {
-                        if (edges[v_idx].first != u) {
-                            swap(edges[v_idx].first, edges[v_idx].second);
-                        }
-                        self(v);
-                    }
-                }
+        vis[u] = true;
+        for (auto v_idx : adj[u]) {
+            auto v = get_edge(u, v_idx);
+            if (!vis[v]) {
+                on_tree[v_idx] = true;
+                d[v] = d[u] + 1;
+                self(v);
             }
         }
     });
@@ -97,36 +88,54 @@ int main() {
         dfs_make(i);
     }
 
-    // need to check if everything can reach one
-    fill(vis.begin(), vis.end(), false);
-
-    vector<bool> ok(n);
-    vis[0] = true;
-    ok[0] = true;
-
-    auto dfs_check = y_combinator([&](auto self, int u) -> bool {
-        if (vis[u]) {
-            return ok[u];
-        }
-
-        vis[u] = true;
-        for (auto v_idx : adj[u]) {
-            if (edges[v_idx].first == u) {
-                auto v = edges[v_idx].second;
-                ok[u] = ok[u] || self(v);
+    for (int i = 0; i < m; i++) {
+        if (on_tree[i]) {
+            if (d[edges[i].first] > d[edges[i].second]) {
+                swap(edges[i].first, edges[i].second);
             }
-        }
-
-        return ok[u];
-    });
-
-    for (int i = 0; i < n; i++) {
-        if (!vis[i]) {
-            dfs_check(i);
+        } else {
+            if (d[edges[i].first] < d[edges[i].second]) {
+                swap(edges[i].first, edges[i].second);
+            }
         }
     }
 
-    if (true || !count(ok.begin(), ok.end(), false)) {
+    // need to check if everything can reach one
+    fill(vis.begin(), vis.end(), false);
+
+    int t = 0;
+    vector<int> in(n);
+    vector<int> low(n);
+
+    auto dfs_check = y_combinator([&](auto self, int u) -> void {
+        in[u] = low[u] = t++;
+        vis[u] = true;
+
+        for (auto v_idx : adj[u]) {
+            if (edges[v_idx].first == u) {
+                auto v = edges[v_idx].second;
+
+                if (vis[v]) {
+                    low[u] = min(low[u], in[v]);
+                } else {
+                    self(v);
+                    low[u] = min(low[u], low[v]);
+                }
+            }
+        }
+    });
+
+    dfs_check(0);
+
+    bool valid = true;
+    for (int i = 1; i < n; i++) {
+        if (in[i] == low[i]) {
+            valid = false;
+            break;
+        }
+    }
+
+    if (valid) {
         for (int i = 0; i < m; i++) {
             auto [x, y] = edges[i];
             cout << x + 1 << ' ' << y + 1 << '\n';
