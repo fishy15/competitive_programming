@@ -1,6 +1,3 @@
-// :pray: :steph:
-// :pray: :bakekaga:
-
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -76,7 +73,7 @@ int main() {
     for (int i : order) {
         for (int j : adj[i]) {
             dp[i] += dp[j];
-            if (dp[i] > MOD) dp[i] -= MOD;
+            if (dp[i] >= MOD) dp[i] -= MOD;
         }
     }
 
