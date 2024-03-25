@@ -34,7 +34,7 @@ struct st {
     };
     vector<node> dq;
     int head = -1;
-    int nn(int l, int r) { dq.emplace_back(l, r); cout << "created " << dq.size() - 1 << '\n'; return dq.size() - 1; }
+    int nn(int l, int r) { dq.emplace_back(l, r); return dq.size() - 1; }
     void upd(int n, int x, int v) {
         dq[n].v += v;
         int l = dq[n].l;
@@ -43,11 +43,9 @@ struct st {
             int m = l + (r - l) / 2;
             if (x <= m) {
                 if (dq[n].c[0] == -1) dq[n].c[0] = nn(l, m);
-                cout << "from " << n << " to " << dq[n].c[0] << '\n';
                 upd(dq[n].c[0], x, v);
             } else {
                 if (dq[n].c[1] == -1) dq[n].c[1] = nn(m + 1, r);
-                cout << "from " << n << " to " << dq[n].c[1] << '\n';
                 upd(dq[n].c[1], x, v);
             }
         }
