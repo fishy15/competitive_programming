@@ -105,13 +105,16 @@ int main() {
     cin >> n;
 
     vector d(n, vector(n, 0));
+    vector idx(n, vector(n, -1));
     vector<int> d_flat;
-    vector<pair<int, int>> edges_ord;
+    int cur_idx = 0;
     rep(i, 0, n) {
         rep(j, 0, n) {
             cin >> d[i][j];
-            edges_ord.push_back({i, j});
-            d_flat.push_back(d[i][j]);
+            if (d[i][j] > 0) {
+                d_flat.push_back(d[i][j]);
+                idx[i][j] = cur_idx++;
+            }
         }
     }
 
@@ -147,31 +150,28 @@ int main() {
         int cur = dest;
         while (cur != src) {
             auto e = pair{p[cur], cur}; 
-            auto idx = p[cur] * n + cur;
-            edge_idxs.push_back(idx);
+            edge_idxs.push_back(idx[p[cur]][cur]);
             cur = p[cur];
         }
 
         return edge_idxs;
     };
 
-    int vars = sz(edges_ord);
+    int vars = cur_idx;
     vvd A;
     vd B;
 
     // construct restrictions on speed on each edge
     // variable is how much extra over the min peed limit we are
-    int idx = 0;
     rep(i, 0, n) {
         rep(j, 0, n) {
-            if (d[i][j] != -1) {
+            if (d[i][j] > 0) {
                 vd pos(vars, 0);
-                pos[idx] = 1;
+                pos[idx[i][j]] = 1;
 
                 A.push_back(pos);
                 B.push_back(d[i][j]);
             }
-            idx++;
         }
     }
 
