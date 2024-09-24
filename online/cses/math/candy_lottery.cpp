@@ -22,17 +22,21 @@
 
 using namespace std;
 
-int n, k;
-long double ans;
-long double tot = 1;
+using ld = long double;
+
 int main() {
     cin.tie(0)->sync_with_stdio(0);
 
+    int n, k;
     cin >> n >> k;
+
+    ld ans = 0;
+    ld tot = 1;
+
     for (int i = k; i >= 1; i--) {
-        long double cur = 1;
+        ld cur = 1;
         for (int j = 0; j < n; j++) {
-            cur *= 1 - 1.0 / i;
+            cur *= 1 - (ld) 1.0 / i;
         }
         ans += i * (1 - cur) * tot;
         tot *= cur;
