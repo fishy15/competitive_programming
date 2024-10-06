@@ -48,16 +48,16 @@ def solve(lst):
 	else:
 		print("0")
 	
+'''
 for i in range(1, 30):
 	for j in range(i, 30):
 		for k in range(j, 30):
 			if not wins((i, j, k)):
 				print(i, j, k)
-
 '''
+
 t = int(input())
 for _ in range(t):
 	n = int(input())
 	nums = list(map(int, input().split()))
 	solve(nums)
-'''
