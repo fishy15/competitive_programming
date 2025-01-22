@@ -39,22 +39,22 @@ void solve() {
 
     sort(all(sides));
 
-    int to_try = 5;
     rep(i, 0, n-1) {
-        if (sides[i] == sides[i+1] && to_try > 0) {
-            to_try--;
+        if (sides[i] == sides[i+1]) {
             auto x = sides[i];
-            rep(j, 0, n-1) {
-                // no overlap then i, i+1, j, j+1
-                if (i != j && i != j+1 && i+1 != j) {
-                    auto y = sides[j];
-                    auto z = sides[j+1];
-                    if (2 * x + y > z && 2 * x + z > y) {
-                        cout << x << ' ' << x << ' ' << y << ' ' << z << '\n';
-                        return;
-                    }
+            sides.erase(begin(sides) + i);
+            sides.erase(begin(sides) + i);
+
+            rep(j, 0, n-3) {
+                auto y = sides[j];
+                auto z = sides[j+1];
+                if (2 * x + y > z && 2 * x + z > y) {
+                    cout << x << ' ' << x << ' ' << y << ' ' << z << '\n';
+                    return;
                 }
             }
+
+            break;
         }
     }
 
