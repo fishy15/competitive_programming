@@ -1,40 +1,46 @@
-#define MethodToTemplateLambda(method) \
-    template<typename T>               \
-    struct method##_t {                \
-        auto operator()(T x) {         \
-            return x. method ();       \
-        }                              \
-    };                                 \
-    
-template<typename T, typename U>
-struct parallel_pair {
-    T first;
-    U second;
-    parallel_pair() : first{}, second{} {}
-    parallel_pair(T x, U y) : first{x}, second{y} {}
+#include <iostream>
+#include <string>
 
-#define OP(op, apply_op)                                                  \
-    auto operator op(const parallel_pair<T, U> &other) const {            \
-        return parallel_pair{first op other.first, second op other.second}; \
-    }                                                                     \
-    auto &operator apply_op(const parallel_pair<T, U> &other) {           \
-        return *this = *this op other;                                    \
-    }
+namespace parallel {
+    // constructing a type without constructing the actual tuple
+    template<typename ...T>
+    struct type_list {};
 
-    OP(+, +=);
-    OP(-, -=);
-    OP(*, *=);
-    OP(/, /=);
-#undef OP
+    template<typename Head, typename ...Tail>
+    void get_head() -> Head;
+
+    template<typename T1, typename ...T>
+    T
+
+    template<typename T1, typename ...T>
+    auto prepend_type(type_list<T...>) -> type_list<T1, T...>;
 
     template<template<typename> typename F>
-    auto call() {
-        return parallel_pair{F<T>{}(first), F<U>{}(second)};
+    auto create_tuple_type() -> type_list<>;
+
+    template<template<typename> typename F, typename T1, typename ...T>
+    auto create_tuple_type() {
+        using head_type = std::invoke_result_t<F<T1>, T1>;
+        auto tail = create_tuple_type<F, T...>();
+        return decltype(prepend_type<head_type>(tail)){};
     }
 
-    template<template<typename> typename F, typename Input>
-    auto call(Input x) {
-        return parallel_pair{F<T>{}(first, x), F<U>{}(second, x)};
+    template<typename ...T>
+    auto tuple_of(type_list<T...>) -> std::tuple<T...> {}
+}
+
+using namespace parallel;
+using namespace std;
+
+template<typename T>
+struct A {
+    double operator()(T x) {
+        return 1.0;
     }
 };
+
+int main() {
+    // type_list<int, std::string> lst;
+    decltype(create_tuple_type<A, int, std::string>())::asdf;
+}
 
