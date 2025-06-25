@@ -89,45 +89,29 @@ struct lazy_segtree {
     }
 };
 
-// range max point update
-struct iterative_segtree {
+template<typename T, typename F>
+struct segtree {
     int n;
     vector<int> st;
-
-    segtree(int n) : n(n), st(2 * n) {}
-    segtree(int n, vector<int> &nums) : segtree(n) { 
-        copy(nums.begin(), nums.end(), st.begin() + n);
-        for (int i = n - 1; i > 0; i--) {
-            st[i] = max(st[i << 1], st[i << 1 | 1]);
+    F op;
+    T id;
+    segtree(int n, F op, T id) : n(n), st(2 * n, id), op(op), id(id) {}
+    segtree(vector<int> &nums, F op, T id) : segtree(sz(nums), op, id) {
+        copy(all(nums), begin(st) + n);
+        for (int i = n-1; i >= 0; i--) {
+            st[i] = op(st[i<<1], st[i<<1|1]);
         }
     }
-
-    void upd(int x, int y) { 
-        x += n;
-        st[x] = y;
-        while (x > 1) {
-            st[x >> 1] = max(st[x], st[x ^ 1]);
-            x >>= 1;
+    void upd(int x, T y) {
+        for (x += n, st[x] = y; x > 1; x >>= 1) {
+            st[x>>1] = op(st[x], st[x^1]);
         }
     }
-
-    int qry(int l, int r) const {
-        int ans = 0;
-        l += n;
-        r += n;
-        while (l < r) {
-            if (l & 1) {
-                ans = max(ans, st[l]);
-                l++;
-            }
-
-            if (r & 1) {
-                r--;
-                ans = max(ans, st[r]);
-            }
-
-            l >>= 1;
-            r >>= 1;
+    T qry(int l, int r) const {
+        T ans = id;
+        for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) ans = op(ans, st[l++]);
+            if (r & 1) ans = op(st[--r], ans);
         }
         return ans;
     }
