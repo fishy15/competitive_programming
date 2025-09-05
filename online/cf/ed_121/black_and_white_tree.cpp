@@ -22,108 +22,110 @@
 #define INF 0x3f3f3f3f
 #define INFLL 0x3f3f3f3f3f3f3f3f
 
-// change if necessary
-#define MAXN 300010
+#define rep(i, a, b) for(int i = a; i < (b); ++i)
+#define all(x) begin(x), end(x)
+#define sz(x) (int)(x).size()
 
 using namespace std;
-
-int n;
-bool black[MAXN];
-vector<int> adj[MAXN];
-
-// 0 - nothing, 1 - black in subtree, 2 - works
-int state[MAXN]; 
-bool ans[MAXN];
-
-template<typename T>
-T ckmax(T &a, T b) {
-    return a = max(a, b);
-}
-
-void dfs(int v, int p) {
-    for (int e : adj[v]) {
-        if (e != p) {
-            dfs(e, v);
-            if (state[e] == 2) {
-                ckmax(state[v], 2);
-            } else if (state[e] == 1) {
-                if (black[v]) {
-                    ckmax(state[v], 2);
-                } else {
-                    ckmax(state[v], 1);
-                }
-            }
-        }
-    }
-
-    if (state[v] == 0 && black[v]) {
-        state[v] = 1;
-    }
-
-    // set neighbors to work
-    if (black[v]) {
-        for (int e : adj[v]) {
-            ans[e] = true;
-        }
-    }
-}
-
-void dfs_reroot(int v, int p, int pstate) {
-    if (state[v] == 2 || pstate == 2 || black[v]) {
-        ans[v] = true;
-    }
-
-    int cnt[3] = {0, 0, 0};
-    for (int e : adj[v]) {
-        if (e != p) {
-            cnt[state[e]]++;
-        }
-    }
-
-    cnt[pstate]++;
-
-    for (int e : adj[v]) {
-        if (e != p) {
-            cnt[state[e]]--;
-
-            if (cnt[2] > 0 || (cnt[1] > 0 && black[v])) {
-                dfs_reroot(e, v, 2);
-            } else if (cnt[1] > 0 || black[v]) {
-                dfs_reroot(e, v, 1);
-            } else {
-                dfs_reroot(e, v, 0);
-            }
-
-            cnt[state[e]]++;
-        }
-    }
-}
 
 int main() {
     cin.tie(0)->sync_with_stdio(0);
 
+    int n;
     cin >> n;
-    for (int i = 0; i < n; i++) {
-        int x; cin >> x;
-        black[i] = (x == 1);
+
+    vector<int> c(n);
+    rep(i, 0, n) {
+        cin >> c[i];
     }
 
-    for (int i = 0; i < n - 1; i++) {
-        int a, b; cin >> a >> b;
-        a--; b--;
-        adj[a].push_back(b);
-        adj[b].push_back(a);
+    vector adj(n, vector<int>{});
+    rep(i, 0, n-1) {
+        int u, v;
+        cin >> u >> v;
+        u--;
+        v--;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
     }
 
-    dfs(0, 0);
-    if (state[0] == 2) {
-        ans[0] = true;
+    int t = 0;
+    vector<int> par(n);
+    vector<int> in(n), out(n);
+    vector<int> csum(n);
+
+    auto dfs = [&](auto &&self, int v, int p) -> void {
+        in[v] = t++;
+        par[v] = p;
+        csum[v] = c[v];
+        for (auto e : adj[v]) {
+            if (e != p) {
+                self(self, e, v);
+                csum[v] += csum[e];
+            }
+        }
+        out[v] = t++;
+    };
+    dfs(dfs, 0, 0);
+
+    // gets the c sum in the subtree rooted at v, away from p
+    auto get_count = [&](int v, int p) {
+        if (par[v] == p) {
+            return csum[v];
+        } else {
+            return csum[0] - csum[p];
+        }
+    };
+
+    vector<int> true_cnt(2 * n);
+
+    // mark true in the subtree of v, away from p
+    auto mark_subtree = [&](int v, int p, int delta) {
+        if (par[v] == p) {
+            true_cnt[in[v]] += delta;
+            true_cnt[out[v]] -= delta;
+        } else {
+            true_cnt[in[0]] += delta;
+            true_cnt[out[0]] -= delta;
+            true_cnt[in[p]] -= delta;
+            true_cnt[out[p]] += delta;
+        }
+    };
+
+    auto check_center = [&](int v) {
+        int cnt = 0;
+        for (auto e : adj[v]) {
+            if (c[e] == 1 && cnt < 2) {
+                cnt++;
+                if (c[v] == 1 || get_count(e, v) > 1) {
+                    // we can reach everything except for in the direction of e
+                    mark_subtree(v, e, 1);
+                } else {
+                    for (auto e2 : adj[v]) {
+                        if (e != e2) {
+                            if (get_count(e2, v) > 0) {
+                                // we can get everything except for in the direction of e and e2
+                                mark_subtree(v, e, 1);
+                                mark_subtree(e2, v, -1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    rep(i, 0, n) {
+        check_center(i);
     }
 
-    dfs_reroot(0, 0, 0);
+    rep(i, 1, 2*n) {
+        true_cnt[i] += true_cnt[i-1];
+    }
 
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
+    rep(i, 0, n) {
+        auto works = (true_cnt[in[i]] > 0) || (c[i] == 1);
+        cout << works << ' ';
     }
     cout << '\n';
 
