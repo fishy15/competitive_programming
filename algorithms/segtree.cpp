@@ -92,27 +92,27 @@ struct lazy_segtree {
 template<typename T, typename F>
 struct segtree {
     int n;
-    vector<int> st;
+    vector<T> st;
     F op;
     T id;
     segtree(int n, F op, T id) : n(n), st(2 * n, id), op(op), id(id) {}
-    segtree(vector<int> &nums, F op, T id) : segtree(sz(nums), op, id) {
+    segtree(vector<T> &nums, F op, T id) : segtree(sz(nums), op, id) {
         copy(all(nums), begin(st) + n);
         for (int i = n-1; i >= 0; i--) {
             st[i] = op(st[i<<1], st[i<<1|1]);
         }
     }
     void upd(int x, T y) {
-        for (x += n, st[x] = y; x > 1; x >>= 1) {
-            st[x>>1] = op(st[x], st[x^1]);
+        for (x += n, st[x] = y; x >>= 1;) {
+            st[x] = op(st[x<<1], st[x<<1|1]);
         }
     }
     T qry(int l, int r) const {
-        T ans = id;
+        T ans_l = id, ans_r = id;
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) ans = op(ans, st[l++]);
-            if (r & 1) ans = op(st[--r], ans);
+            if (l & 1) ans_l = op(ans_l, st[l++]);
+            if (r & 1) ans_r = op(st[--r], ans_r);
         }
-        return ans;
+        return op(ans_l, ans_r);
     }
 };
